@@ -12,8 +12,7 @@ const HomeFeature = () => {
   useEffect(() => {
     const colRef = collection(db, "posts");
     const queries = query(
-      colRef,
-      where("status", "==", 1),
+      colRef, // set status (pending, apply...) tai day where("status","==", 1)
       where("hot", "==", true)
     );
     onSnapshot(queries, (snapshot) => {

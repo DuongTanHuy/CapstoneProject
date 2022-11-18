@@ -19,7 +19,6 @@ import {
   getDocs,
   query,
   serverTimestamp,
-  where,
 } from "firebase/firestore";
 import { db } from "firebase-app/firebase-config";
 import { useAuth } from "contexts/auth-context";
@@ -29,9 +28,18 @@ const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
   const { userInfo } = useAuth();
-  const { control, watch, setValue, handleSubmit, getValues, reset } = useForm({
+  const {
+    control,
+    watch,
+    setValue,
+    handleSubmit,
+    getValues,
+    reset,
+    formState: { isValid },
+  } = useForm({
     mode: "onChange",
     defaultValues: {
+      author: userInfo?.fullName,
       title: "",
       slug: "",
       status: 2,
@@ -58,11 +66,13 @@ const PostAddNew = () => {
   // console.log("PostAddNew ~ watchCategory", watchCategory);
 
   const addPostHandler = async (values) => {
+    if (!isValid) return;
     setLoading(true);
     try {
       const cloneValue = { ...values };
       cloneValue.slug = slugify(values.slug || values.title, { lower: true });
       cloneValue.status = Number(values.status);
+
       const colRef = collection(db, "posts");
       await addDoc(colRef, {
         ...cloneValue,
@@ -92,7 +102,7 @@ const PostAddNew = () => {
   useEffect(() => {
     async function getData() {
       const colRef = collection(db, "categories");
-      const q = query(colRef, where("status", "==", 1));
+      const q = query(colRef);
       const querySnapshot = await getDocs(q);
       let result = [];
       querySnapshot.forEach((doc) => {
@@ -232,7 +242,7 @@ const PostAddNew = () => {
           isLoading={loading}
           disabled={loading}
         >
-          Add new post
+          Create your auction
         </Button>
       </form>
     </PostAddNewStyles>

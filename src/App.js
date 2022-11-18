@@ -2,6 +2,7 @@ import Layout from "components/layout/Layout";
 import DashboardLayout from "components/module/dashboard/DashboardLayout";
 import PostAddNew from "components/module/post/PostAddNew";
 import PostManage from "components/module/post/PostManage";
+import PostUpdate from "components/module/post/PostUpdate";
 import AuctionPage from "pages/AuctionPage";
 import DashboardPage from "pages/DashboardPage";
 import HomePage from "pages/HomePage";
@@ -30,6 +31,10 @@ function App() {
             <Route
               path="/auction/create-auction"
               element={<PostAddNew></PostAddNew>}
+            ></Route>
+            <Route
+              path="/auction/update-auction"
+              element={<PostUpdate></PostUpdate>}
             ></Route>
           </Route>
 

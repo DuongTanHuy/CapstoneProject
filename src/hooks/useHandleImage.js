@@ -10,9 +10,7 @@ import { useState } from "react";
 export default function useHandleImage(setValue, getValues) {
   const [progress, setProgress] = useState(0);
   const [image, setImage] = useState("");
-
   if (!setValue || !getValues) return;
-
   const handleUploadImage = (file) => {
     const storage = getStorage();
     const storageRef = ref(storage, "images/" + file.name);
@@ -45,62 +43,9 @@ export default function useHandleImage(setValue, getValues) {
       }
     );
   };
-
-  // const handleUploadImage = (file) => {
-  //   const storage = getStorage();
-
-  //   const storageRef = ref(storage, "images/" + file.name);
-  //   const uploadTask = uploadBytesResumable(storageRef, file);
-
-  //   uploadTask.on(
-  //     "state_changed",
-  //     (snapshot) => {
-  //       const progress =
-  //         (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-  //       console.log("Upload is " + progress + "% done");
-  //       switch (snapshot.state) {
-  //         case "paused":
-  //           console.log("Upload is paused!");
-  //           break;
-  //         case "running":
-  //           console.log("Upload is running!");
-  //           break;
-  //         default:
-  //           console.log("Not thing at all!");
-  //       }
-  //     },
-  //     (error) => {
-  //       // A full list of error codes is available at
-  //       switch (error.code) {
-  //         case "storage/unauthorized": {
-  //           toast.error("User doesn't have permission to access the object!");
-  //           break;
-  //         }
-  //         case "storage/canceled": {
-  //           toast.error("User canceled the upload!");
-  //           break;
-  //         }
-  //         case "storage/unknown": {
-  //           toast.error(
-  //             "// Unknown error occurred, inspect error.serverResponse!"
-  //           );
-  //           break;
-  //         }
-  //         default:
-  //           console.log("An error occurred during image processing");
-  //       }
-  //     },
-  //     () => {
-  //       // Upload completed successfully, now we can get the download URL
-  //       getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-  //         console.log("File available at", downloadURL);
-  //       });
-  //     }
-  //   );
-  // };
-
-  const handleSelectImage = (event) => {
-    const file = event.target.files[0];
+  const handleSelectImage = (e) => {
+    const file = e.target.files[0];
+    console.log("file " + file);
     if (!file) return;
     setValue("imageName", file.name);
     handleUploadImage(file);
@@ -108,23 +53,28 @@ export default function useHandleImage(setValue, getValues) {
 
   const handleDeleteImg = () => {
     const storage = getStorage();
-
-    const imgRef = ref(storage, "images/" + getValues("imageName"));
-
-    deleteObject(imgRef)
+    const imageRef = ref(storage, "images/" + getValues("imageName"));
+    deleteObject(imageRef)
       .then(() => {
-        console.log("Removed image successfully!");
+        console.log("Remove image successfully");
         setImage("");
         setProgress(0);
       })
       .catch((error) => {
-        console.log("Can't delete image!");
+        console.log("handleDeleteImage ~ error", error);
+        console.log("Can not delete image");
       });
   };
-
   const handleResetUpload = () => {
     setImage("");
     setProgress(0);
   };
-  return { image, progress, handleSelectImage, handleDeleteImg, handleResetUpload };
+  return {
+    image,
+    setImage,
+    handleResetUpload,
+    progress,
+    handleSelectImage,
+    handleDeleteImg,
+  };
 }
