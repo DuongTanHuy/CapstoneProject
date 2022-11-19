@@ -3,6 +3,8 @@ import DashboardLayout from "components/module/dashboard/DashboardLayout";
 import PostAddNew from "components/module/post/PostAddNew";
 import PostManage from "components/module/post/PostManage";
 import PostUpdate from "components/module/post/PostUpdate";
+import UserManage from "components/user/UserManage";
+import UserProfile from "components/user/UserProfile";
 import AuctionPage from "pages/AuctionPage";
 import DashboardPage from "pages/DashboardPage";
 import HomePage from "pages/HomePage";
@@ -21,7 +23,6 @@ function App() {
           <Route path="/" element={<HomePage></HomePage>}></Route>
           <Route path="/sign-up" element={<SignUpPage></SignUpPage>}></Route>
           <Route path="/sign-in" element={<SignInPage></SignInPage>}></Route>
-          {/* <Route path="/auction" element={<AuctionPage></AuctionPage>}></Route> */}
 
           <Route element={<Layout></Layout>}>
             <Route
@@ -36,6 +37,7 @@ function App() {
               path="/auction/update-auction"
               element={<PostUpdate></PostUpdate>}
             ></Route>
+            <Route path="/profile" element={<UserProfile></UserProfile>}></Route>
           </Route>
 
           <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
@@ -53,6 +55,10 @@ function App() {
             <Route
               path="/manage/pending"
               element={<PostManage></PostManage>}
+            ></Route>
+            <Route
+              path="/manage/user"
+              element={<UserManage></UserManage>}
             ></Route>
           </Route>
         </Routes>

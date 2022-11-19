@@ -1,3 +1,5 @@
+import { auth } from "firebase-app/firebase-config";
+import { signOut } from "firebase/auth";
 import React from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
@@ -116,6 +118,26 @@ const sidebarLinks = [
     ),
   },
   {
+    title: "User",
+    url: "/manage/user",
+    icon: (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="2"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+        />
+      </svg>
+    ),
+  },
+  {
     title: "Logout",
     url: "/",
     icon: (
@@ -134,7 +156,9 @@ const sidebarLinks = [
         />
       </svg>
     ),
-    onClick: () => {},
+    onClick: () => {
+      signOut(auth);
+    },
   },
 ];
 const Sidebar = () => {
@@ -144,12 +168,21 @@ const Sidebar = () => {
         <img srcSet="/logo.png 2x" alt="" />
         <span className="text-primary font-semibold">Smart Tender</span>
       </div> */}
-      {sidebarLinks.map((link) => (
-        <NavLink to={link.url} className="menu-item" key={link.title}>
-          <span className="menu-icon">{link.icon}</span>
-          <span className="menu-text">{link.title}</span>
-        </NavLink>
-      ))}
+      {sidebarLinks.map((link) => {
+        if (link.onClick)
+          return (
+            <div className="menu-item" onClick={link.onClick} key={link.title}>
+              <span className="menu-icon">{link.icon}</span>
+              <span className="menu-text">{link.title}</span>
+            </div>
+          );
+        return (
+          <NavLink to={link.url} className="menu-item" key={link.title}>
+            <span className="menu-icon">{link.icon}</span>
+            <span className="menu-text">{link.title}</span>
+          </NavLink>
+        );
+      })}
     </SidebarStyles>
   );
 };

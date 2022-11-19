@@ -46,18 +46,18 @@ const AuctionPage = () => {
       const colRef = collection(db, "posts");
       const newQueries = query(
         colRef,
-        where("userId", "==", userInfo.uid ? userInfo.uid : "")
+        where("userId", "==", userInfo?.uid ? userInfo.uid : "")
       );
       const queries = filter
         ? query(
             colRef,
-            where("userId", "==", userInfo.uid ? userInfo.uid : ""),
+            where("userId", "==", userInfo?.uid ? userInfo.uid : ""),
             where("title", ">=", filter),
             where("title", "<=", filter + "utf8")
           )
         : query(
             colRef,
-            where("userId", "==", userInfo.uid ? userInfo.uid : ""),
+            where("userId", "==", userInfo?.uid ? userInfo.uid : ""),
             limit(POSTS_PER_PAGE)
           );
 
@@ -85,7 +85,7 @@ const AuctionPage = () => {
       setLastDoc(lastVisible);
     }
     fetchData();
-  }, [filter, userInfo.uid]);
+  }, [filter, userInfo?.uid]);
 
   const handleDeletePost = async (post) => {
     if (post.status === 1) {
