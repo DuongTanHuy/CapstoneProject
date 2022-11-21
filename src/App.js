@@ -20,10 +20,10 @@ function App() {
     <div>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<HomePage></HomePage>}></Route>
           <Route path="/sign-up" element={<SignUpPage></SignUpPage>}></Route>
           <Route path="/sign-in" element={<SignInPage></SignInPage>}></Route>
 
+          <Route path="/" element={<HomePage></HomePage>}></Route>
           <Route element={<Layout></Layout>}>
             <Route
               path="/auction"
@@ -37,7 +37,10 @@ function App() {
               path="/auction/update-auction"
               element={<PostUpdate></PostUpdate>}
             ></Route>
-            <Route path="/profile" element={<UserProfile></UserProfile>}></Route>
+            <Route
+              path="/profile"
+              element={<UserProfile></UserProfile>}
+            ></Route>
           </Route>
 
           <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
@@ -47,7 +50,7 @@ function App() {
             element={<PostDetailsPage></PostDetailsPage>}
           ></Route>
 
-          <Route element={<DashboardLayout></DashboardLayout>}>
+          <Route path="/" element={<DashboardLayout></DashboardLayout>}>
             <Route
               path="/dashboard"
               element={<DashboardPage></DashboardPage>}

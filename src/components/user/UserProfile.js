@@ -4,6 +4,7 @@ import ImageUpload from "components/image/ImageUpload";
 import { Input } from "components/input";
 import { Label } from "components/label";
 import DashboardHeading from "components/module/dashboard/DashboardHeading";
+import TextAreaAutoReSize from "components/textarea/TextAreaAutoReSize";
 import { useAuth } from "contexts/auth-context";
 import { db } from "firebase-app/firebase-config";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
@@ -42,6 +43,7 @@ const UserProfile = () => {
       role: "",
       status: "",
       imageName: "",
+      description: "",
     },
   });
 
@@ -52,8 +54,6 @@ const UserProfile = () => {
     if (!isValid) return;
 
     const colRef = doc(db, "users", userId);
-
-    console.log(values.imageName);
 
     Swal.fire({
       title: "Are you sure?",
@@ -74,6 +74,7 @@ const UserProfile = () => {
           identify: values.identify,
           phone: values.phone,
           imageName: values.imageName,
+          description: values.description,
         });
 
         Swal.fire("Updated!", "Your file has been update.", "success");
@@ -108,6 +109,15 @@ const UserProfile = () => {
       ></DashboardHeading>
       <form onSubmit={handleSubmit(handleUpdate)}>
         <div className="text-center mb-10">
+          <Button
+            isLoading={isSubmitting}
+            disabled={isSubmitting}
+            kind="primary"
+            type="submit"
+            className="ml-auto w-[200px]"
+          >
+            Update
+          </Button>
           <ImageUpload
             onChange={handleSelectImage}
             handleDeleteImg={handleDeleteImg}
@@ -192,15 +202,14 @@ const UserProfile = () => {
             ></Input>
           </Field>
         </div>
-        <Button
-          isLoading={isSubmitting}
-          disabled={isSubmitting}
-          kind="primary"
-          type="submit"
-          className="mx-auto w-[200px]"
-        >
-          Update
-        </Button>
+        <Field>
+          <Label>About your</Label>
+          <TextAreaAutoReSize
+            control={control}
+            name="description"
+            placeholder="About you"
+          ></TextAreaAutoReSize>
+        </Field>
       </form>
     </div>
   );

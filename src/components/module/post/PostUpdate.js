@@ -149,15 +149,6 @@ const PostUpdate = () => {
         [{ header: [1, 2, 3, 4, 5, 6, false] }],
         ["link", "image"],
       ],
-      imageUploader: {
-        upload: (file) => {
-          return new Promise((resolve, reject) => {
-            setTimeout(() => {
-              resolve("https://source.unsplash.com/FV3GConVSss/900x500");
-            }, 3500);
-          });
-        },
-      },
     }),
     []
   );

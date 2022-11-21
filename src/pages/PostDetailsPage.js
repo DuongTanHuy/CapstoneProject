@@ -187,12 +187,7 @@ const PostDetailsPage = () => {
               </div>
               <div className="author-content">
                 <h3 className="author-name">{user?.userName}</h3>
-                <p className="author-desc">
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                  Dignissimos non animi porro voluptates quibusdam optio nulla
-                  quis nihil ipsa error delectus temporibus nesciunt, nam
-                  officiis adipisci suscipit voluptate eum totam!
-                </p>
+                <p className="author-desc">{user?.description}</p>
               </div>
             </div>
           </div>
