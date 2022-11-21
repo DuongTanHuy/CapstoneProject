@@ -16,11 +16,17 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import useHandleImage from "hooks/useHandleImage";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { postStatus } from "untils/constants";
+import DashboardHeading from "../dashboard/DashboardHeading";
+import "react-quill/dist/quill.snow.css";
+import ImageUploader from "quill-image-uploader";
+import ReactQuill, { Quill } from "react-quill";
+
+Quill.register("modules/imageUploader", ImageUploader);
 
 const PostUpdate = () => {
   const {
@@ -55,6 +61,7 @@ const PostUpdate = () => {
   const watchHot = watch("hot");
   const [categories, setCategories] = useState([]);
   const [selectCategory, setSelectCategory] = useState("");
+  const [content, setContent] = useState("");
 
   const { image, setImage, progress, handleSelectImage, handleDeleteImg } =
     useHandleImage(setValue, getValues);
@@ -66,7 +73,9 @@ const PostUpdate = () => {
       const singleDoc = await getDoc(colRef);
 
       reset(singleDoc.data());
-      
+
+      setContent(singleDoc.data().content);
+
       setImage(singleDoc.data().image);
       setSelectCategory(
         categories.find(
@@ -102,8 +111,6 @@ const PostUpdate = () => {
   const handleUpdate = (values) => {
     if (!isValid) return;
 
-    console.log(values.image);
-
     const colRef = doc(db, "posts", postId);
 
     Swal.fire({
@@ -132,11 +139,37 @@ const PostUpdate = () => {
     });
   };
 
+  const module = useMemo(
+    () => ({
+      toolbar: [
+        ["bold", "italic", "underline", "strike"],
+        ["blockquote"],
+        [{ header: 1 }, { header: 2 }], // custom button values
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ["link", "image"],
+      ],
+      imageUploader: {
+        upload: (file) => {
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+              resolve("https://source.unsplash.com/FV3GConVSss/900x500");
+            }, 3500);
+          });
+        },
+      },
+    }),
+    []
+  );
+
   if (!postId) return null;
 
   return (
     <div>
-      <h1 className="dashboard-heading">Update your Auction</h1>
+      <DashboardHeading
+        title="Update your Auction"
+        desc="Change your auction information"
+      ></DashboardHeading>
       <form onSubmit={handleSubmit(handleUpdate)}>
         <div className="grid grid-cols-2 gap-x-10 mb-10">
           <Field>
@@ -156,13 +189,33 @@ const PostUpdate = () => {
               placeholder="Find the author"
             ></Input>
           </Field>
-          <Field>
+          {/* <Field>
             <Label>Slug</Label>
             <Input
               control={control}
               placeholder="Enter your slug"
               name="slug"
             ></Input>
+          </Field> */}
+          <Field>
+            <Label>Category</Label>
+            <Dropdown>
+              <Dropdown.Select
+                placeholder={`${selectCategory?.name || "Choose auction type"}`}
+              ></Dropdown.Select>
+              <Dropdown.List>
+                {categories &&
+                  categories.length > 0 &&
+                  categories.map((category) => (
+                    <Dropdown.Option
+                      key={category.id}
+                      onClick={() => handleClickOption(category)}
+                    >
+                      {category.name}
+                    </Dropdown.Option>
+                  ))}
+              </Dropdown.List>
+            </Dropdown>
           </Field>
           <Field>
             <Label>Status</Label>
@@ -208,31 +261,22 @@ const PostUpdate = () => {
               image={image}
             ></ImageUpload>
           </Field>
+          <Field>
+            <Label>Enter your detail</Label>
+            {/* <Input
+                control={control}
+                name="detail"
+                className="min-h-[100px]"
+              ></Input> */}
+            <ReactQuill
+              className="w-full min-h-[200px] entry-content"
+              modules={module}
+              theme="snow"
+              value={content}
+              onChange={setContent}
+            ></ReactQuill>
+          </Field>
           <div className="flex flex-row justify-between transition-all">
-            <div className="flex-1 mr-20">
-              <Field>
-                <Label>Category</Label>
-                <Dropdown>
-                  <Dropdown.Select
-                    placeholder={`${
-                      selectCategory?.name || "Choose auction type"
-                    }`}
-                  ></Dropdown.Select>
-                  <Dropdown.List>
-                    {categories &&
-                      categories.length > 0 &&
-                      categories.map((category) => (
-                        <Dropdown.Option
-                          key={category.id}
-                          onClick={() => handleClickOption(category)}
-                        >
-                          {category.name}
-                        </Dropdown.Option>
-                      ))}
-                  </Dropdown.List>
-                </Dropdown>
-              </Field>
-            </div>
             <Field>
               <div className="flex flex-col items-center gap-y-[30px]">
                 <Label>Feature auction</Label>

@@ -21,6 +21,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { postStatus } from "untils/constants";
 import lodash from "lodash";
+import DashboardHeading from "../dashboard/DashboardHeading";
 
 const POSTS_PER_PAGE = 5;
 
@@ -146,17 +147,23 @@ const AuctionPage = () => {
   return (
     <div>
       <div className="mb-10 flex justify-end">
+        <div className="w-full h-full">
+          <DashboardHeading
+            title="Auction manager"
+            desc="Auctions are pending approval"
+          ></DashboardHeading>
+        </div>
         <input
           onChange={handleFilterChange}
           type="text"
-          className="w-full max-w-[300px] p-4 rounded-lg border-2 border-solid border-gray-300 outline-none focus:border-primary"
+          className="w-full max-h-[60px] max-w-[300px] p-4 rounded-lg border-2 border-solid border-gray-300 outline-none focus:border-primary"
           placeholder="Search post..."
         />
       </div>
       <Table>
         <thead>
           <tr>
-            <th>Id</th>
+            <th>ID</th>
             <th>Tender</th>
             <th>Category</th>
             <th>Author</th>
@@ -169,7 +176,7 @@ const AuctionPage = () => {
             posts.length > 0 &&
             posts.map((post) => (
               <tr key={post.id}>
-                <td>01</td>
+                <td>{post.id.slice(0, 3)}</td>
                 <td>
                   <div className="flex items-center gap-x-3">
                     <img
@@ -180,6 +187,7 @@ const AuctionPage = () => {
                     <div className="flex-1">
                       <h3 className="font-semibold">{post.title}</h3>
                       <time className="text-sm text-gray-500">
+                        <span>Date: </span>
                         {new Date(
                           post.createdAt.seconds * 1000
                         ).toLocaleDateString("vi-VI")}

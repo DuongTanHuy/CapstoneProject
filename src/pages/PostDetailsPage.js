@@ -4,8 +4,13 @@ import PostCategory from "components/module/post/PostCategory";
 import PostImage from "components/module/post/PostImage";
 import PostItem from "components/module/post/PostItem";
 import PostMeta from "components/module/post/PostMeta";
-import React from "react";
+import { db } from "firebase-app/firebase-config";
+import { doc, getDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
+import parse from "html-react-parser";
+
 const PostDetailsPageStyles = styled.div`
   padding-bottom: 100px;
   .post {
@@ -94,68 +99,79 @@ const PostDetailsPageStyles = styled.div`
 `;
 
 const PostDetailsPage = () => {
+  const [params] = useSearchParams();
+  const detailId = params.get("id");
+
+  const [postDetail, setPostDetail] = useState([]);
+  const [category, setCategory] = useState([]);
+  const [user, setUser] = useState([]);
+
+  const date = postDetail?.createdAt?.seconds
+    ? new Date(postDetail?.createdAt?.seconds * 1000)
+    : new Date();
+  const formatDate = new Date(date).toLocaleDateString("vi-VI");
+
+  useEffect(() => {
+    async function fetchData() {
+      const colRef = doc(db, "posts", detailId);
+      const singleDoc = await getDoc(colRef);
+      setPostDetail(singleDoc.data());
+    }
+
+    fetchData();
+  }, [detailId]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const colRef = doc(
+        db,
+        "categories",
+        postDetail?.categoryId || "1EfE0RTX3XSna0daNiz9"
+      );
+      const singleDoc = await getDoc(colRef);
+      setCategory(singleDoc.data());
+    }
+
+    fetchData();
+  }, [postDetail.categoryId]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const colRef = doc(
+        db,
+        "users",
+        postDetail?.userId || "ocyg4P29EmXI2z2cFktoMMSscEl2"
+      );
+      const singleDoc = await getDoc(colRef);
+      setUser(singleDoc.data());
+    }
+
+    fetchData();
+  }, [postDetail?.userId]);
+
   return (
     <PostDetailsPageStyles>
       <Layout>
         <div className="container">
           <div className="post-header">
             <PostImage
-              url="https://images.unsplash.com/photo-1649837867356-6c7ef7057f32?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80"
+              url={postDetail.image}
               className="post-feature"
             ></PostImage>
             <div className="post-info">
-              <PostCategory className="mb-6">Kiến thức</PostCategory>
-              <h1 className="post-heading">
-                Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
-              </h1>
-              <PostMeta></PostMeta>
+              <PostCategory className="mb-6">{category.name}</PostCategory>
+              <h1 className="post-heading">{postDetail.title}</h1>
+              <PostMeta
+                authorName={postDetail.author}
+                date={formatDate}
+              ></PostMeta>
             </div>
           </div>
           <div className="post-content">
+            <h2>Detail product</h2>
             <div className="entry-content">
-              <h2>Chương 1</h2>
-              <p>
-                Gastronomy atmosphere set aside. Slice butternut cooking home.
-                Delicious romantic undisturbed raw platter will meld. Thick
-                Skewers skillet natural, smoker soy sauce wait roux. slices Food
-                qualities braise chicken cuts bowl through slices butternut
-                snack. Tender meat juicy dinners. One-pot low heat plenty of
-                time adobo fat raw soften fruit. sweet renders bone-in marrow
-                richness kitchen, fricassee basted pork shoulder. Delicious
-                butternut squash hunk. Flavor centerpiece plate, delicious ribs
-                bone-in meat, excess chef end. sweet effortlessly pork, low heat
-                smoker soy sauce flavor meat, rice fruit fruit. Romantic
-                fall-off-the-bone butternut chuck rice burgers. renders aromatic
-                enjoyment, then slices taco. Minutes undisturbed cuisine lunch
-                magnificent mustard curry. Juicy share baking sheet pork. Meals
-                ramen rarities selection, raw pastries richness magnificent
-                atmosphere. Sweet soften dinners, cover mustard infused skillet,
-                Skewers on culinary experience.
-              </p>
-
-              <p>
-                Juicy meatballs brisket slammin' baked shoulder. Juicy smoker
-                soy sauce burgers brisket. polenta mustard hunk greens. Wine
-                technique snack skewers chuck excess. Oil heat slowly. slices
-                natural delicious, set aside magic tbsp skillet, bay leaves
-                brown centerpiece. fruit soften edges frond slices onion snack
-                pork steem on wines excess technique cup; Cover smoker soy sauce
-                fruit snack. Sweet one-dozen scrape delicious, non sheet raw
-                crunch mustard. Minutes clever slotted tongs scrape, brown steem
-                undisturbed rice.
-              </p>
-
-              <p>
-                Food qualities braise chicken cuts bowl through slices butternut
-                snack. Tender meat juicy dinners. One-pot low heat plenty of
-                time adobo fat raw soften fruit. sweet renders bone-in marrow
-                richness kitchen, fricassee basted pork shoulder. Delicious
-                butternut squash hunk. Flavor centerpiece plate, delicious ribs
-                bone-in meat, excess chef end. sweet effortlessly pork, low heat
-                smoker soy sauce flavor meat, rice fruit fruit. Romantic
-                fall-off-the-bone butternut chuck rice burgers.
-              </p>
-              <figure>
+              <div>{parse(postDetail?.content || "")}</div>
+              {/* <figure>
                 <img
                   src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80"
                   alt=""
@@ -163,36 +179,14 @@ const PostDetailsPage = () => {
                 <figcaption>
                   Gastronomy atmosphere set aside. Slice butternut cooking home.
                 </figcaption>
-              </figure>
-              <h2>Chương 2</h2>
-              <p>
-                Gastronomy atmosphere set aside. Slice butternut cooking home.
-                Delicious romantic undisturbed raw platter will meld. Thick
-                Skewers skillet natural, smoker soy sauce wait roux. slices Food
-                qualities braise chicken cuts bowl through slices butternut
-                snack. Tender meat juicy dinners. One-pot low heat plenty of
-                time adobo fat raw soften fruit. sweet renders bone-in marrow
-                richness kitchen, fricassee basted pork shoulder. Delicious
-                butternut squash hunk. Flavor centerpiece plate, delicious ribs
-                bone-in meat, excess chef end. sweet effortlessly pork, low heat
-                smoker soy sauce flavor meat, rice fruit fruit. Romantic
-                fall-off-the-bone butternut chuck rice burgers. renders aromatic
-                enjoyment, then slices taco. Minutes undisturbed cuisine lunch
-                magnificent mustard curry. Juicy share baking sheet pork. Meals
-                ramen rarities selection, raw pastries richness magnificent
-                atmosphere. Sweet soften dinners, cover mustard infused skillet,
-                Skewers on culinary experience.
-              </p>
+              </figure> */}
             </div>
             <div className="author">
               <div className="author-image">
-                <img
-                  src="https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80"
-                  alt=""
-                />
+                <img src={user?.avatar} alt="" />
               </div>
               <div className="author-content">
-                <h3 className="author-name">Evondev</h3>
+                <h3 className="author-name">{user?.userName}</h3>
                 <p className="author-desc">
                   Lorem, ipsum dolor sit amet consectetur adipisicing elit.
                   Dignissimos non animi porro voluptates quibusdam optio nulla
@@ -203,7 +197,7 @@ const PostDetailsPage = () => {
             </div>
           </div>
           <div className="post-related">
-            <Heading>Bài viết liên quan</Heading>
+            <Heading>Related Posts</Heading>
             <div className="grid-layout grid-layout--primary">
               <PostItem></PostItem>
               <PostItem></PostItem>

@@ -9,10 +9,13 @@ const LayoutStyles = styled.div`
   .dashboard {
     &-heading {
       font-weight: bold;
-      font-size: 36px;
-      margin-bottom: 40px;
+      font-size: 25px;
+      margin-bottom: 5px;
       color: ${(props) => props.theme.primary};
-      letter-spacing: 1px;
+    }
+    &-short-desc {
+      font-size: 14px;
+      color: ${(props) => props.theme.gray80};
     }
     &-create-auction-layout {
       padding: 0 60px;

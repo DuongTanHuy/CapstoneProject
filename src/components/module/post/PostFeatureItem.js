@@ -101,7 +101,7 @@ const PostFeatureItem = ({ data }) => {
             authorName={data?.author}
           ></PostMeta>
         </div>
-        <PostTitle to={data.slug} size="big">
+        <PostTitle to={`${data.slug}?id=${data.id}`} size="big">
           {data.title}
         </PostTitle>
       </div>

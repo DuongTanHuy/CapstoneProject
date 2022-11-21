@@ -21,6 +21,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { postStatus } from "untils/constants";
 import lodash from "lodash";
+import DashboardHeading from "components/module/dashboard/DashboardHeading";
 
 const POSTS_PER_PAGE = 5;
 
@@ -152,7 +153,11 @@ const AuctionPage = () => {
   };
 
   return (
-    <div className="p-10">
+    <div>
+      <DashboardHeading
+        title="My Auction"
+        desc="Manage your auction list"
+      ></DashboardHeading>
       <div className="mb-10 flex justify-end">
         <div className="flex flex-row w-full max-w-[400px] gap-5">
           <input
@@ -169,7 +174,7 @@ const AuctionPage = () => {
       <Table>
         <thead>
           <tr>
-            <th>Id</th>
+            <th>ID</th>
             <th>Tender</th>
             <th>Category</th>
             <th>Author</th>
@@ -182,7 +187,7 @@ const AuctionPage = () => {
             posts.length > 0 &&
             posts.map((post) => (
               <tr key={post.id}>
-                <td>01</td>
+                <td>{post.id.slice(0, 3)}</td>
                 <td>
                   <div className="flex items-center gap-x-3">
                     <img
@@ -192,7 +197,7 @@ const AuctionPage = () => {
                     />
                     <div className="flex-1">
                       <h3 className="font-semibold">{post.title}</h3>
-                      <time className="text-sm text-gray-500">
+                      <time className="text-sm text-gray-500"><span>Date: </span>
                         {new Date(
                           post.createdAt.seconds * 1000
                         ).toLocaleDateString("vi-VI")}

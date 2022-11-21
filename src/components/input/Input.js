@@ -34,12 +34,26 @@ const InputStyles = styled.div`
   }
 `;
 
-const Input = ({ name = "", type = "text", children, control, ...props }) => {
+const Input = ({
+  name = "",
+  type = "text",
+  children,
+  control,
+  className = "",
+  ...props
+}) => {
   const { field } = useController({ control, name, defaultValue: "" });
 
   return (
     <InputStyles hasIcon={children ? true : false}>
-      <input type={type} id={name} {...field} {...props} autoComplete="off" />
+      <input
+        className={className}
+        type={type}
+        id={name}
+        {...field}
+        {...props}
+        autoComplete="off"
+      />
       {children ? <div className="input-icon">{children}</div> : null}
     </InputStyles>
   );

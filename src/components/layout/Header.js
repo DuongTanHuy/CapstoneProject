@@ -77,9 +77,18 @@ const Header = () => {
           <ul className="menu">
             {menuList.map((item) => (
               <li className="menu-item" key={item.title}>
-                <NavLink to={item.url} className="menu-link">
-                  {item.title}
-                </NavLink>
+                {item.title === "Profile" ? (
+                  <NavLink
+                    to={item.url + `?id=${userInfo?.uid}`}
+                    className="menu-link"
+                  >
+                    {item.title}
+                  </NavLink>
+                ) : (
+                  <NavLink to={item.url} className="menu-link">
+                    {item.title}
+                  </NavLink>
+                )}
               </li>
             ))}
           </ul>

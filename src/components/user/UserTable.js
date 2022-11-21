@@ -1,15 +1,15 @@
-import { ActionDelete, ActionEdit } from "components/actions";
+import { ActionDelete } from "components/actions";
 import { LabelStatus } from "components/label";
 import { Table } from "components/table";
 import { db } from "firebase-app/firebase-config";
-import { collection, onSnapshot } from "firebase/firestore";
+import { deleteUser } from "firebase/auth";
+import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { userRole, userStatus } from "untils/constants";
 
 const UserTable = () => {
   const [userList, setUserList] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const colRef = collection(db, "users");
@@ -49,6 +49,26 @@ const UserTable = () => {
     }
   };
 
+  const handleDeleteUser = (user) => {
+    const colRef = doc(db, "users", user?.id);
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await deleteDoc(colRef);
+        await deleteUser(user);
+        Swal.fire("Deleted!", "An account has been deleted.", "success");
+      }
+    });
+  };
+
   const renderUserItems = (user) => {
     return (
       <tr key={user.id}>
@@ -58,7 +78,7 @@ const UserTable = () => {
             <img
               src={`${user.avatar || "/img-upload.png"}`}
               alt=""
-              className="w-[66px] h-[55px] rounded object-cover"
+              className="w-[60px] h-[60px] rounded-full object-cover"
             />
             <div className="flex-1">
               <h3 className="font-semibold">{user.fullName}</h3>
@@ -74,10 +94,8 @@ const UserTable = () => {
         <td>{renderLabelRole(Number(user.role))}</td>
         <td>
           <div className="flex items-center gap-x-3">
-            <ActionEdit
-              onClick={() => navigate(`/manage/update-user?id=${user.id}`)}
-            ></ActionEdit>
-            <ActionDelete></ActionDelete>
+            {/* truyen tham so vao handle thi phai goi trong mot arow function */}
+            <ActionDelete onClick={() => handleDeleteUser(user)}></ActionDelete>
           </div>
         </td>
       </tr>

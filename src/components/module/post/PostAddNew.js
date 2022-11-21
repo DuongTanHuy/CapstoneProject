@@ -4,11 +4,15 @@ import { Dropdown } from "components/dropdown";
 import { Field } from "components/field";
 import { Input } from "components/input";
 import { Label } from "components/label";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import styled from "styled-components";
 import { postStatus } from "untils/constants";
+
+import ReactQuill, { Quill } from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import ImageUploader from "quill-image-uploader";
 
 import ImageUpload from "components/image/ImageUpload";
 import useHandleImage from "hooks/useHandleImage";
@@ -23,11 +27,15 @@ import {
 import { db } from "firebase-app/firebase-config";
 import { useAuth } from "contexts/auth-context";
 import { toast } from "react-toastify";
+import DashboardHeading from "../dashboard/DashboardHeading";
 
 const PostAddNewStyles = styled.div``;
 
+Quill.register("modules/imageUploader", ImageUploader);
+
 const PostAddNew = () => {
   const { userInfo } = useAuth();
+
   const {
     control,
     watch,
@@ -39,7 +47,7 @@ const PostAddNew = () => {
   } = useForm({
     mode: "onChange",
     defaultValues: {
-      author: userInfo?.fullName,
+      author: "",
       title: "",
       slug: "",
       status: 2,
@@ -53,6 +61,7 @@ const PostAddNew = () => {
   const [categories, setCategories] = useState([]);
   const [selectCategory, setSelectCategory] = useState("");
   const [loading, setLoading] = useState(false);
+  const [content, setContent] = useState("");
 
   const {
     image,
@@ -70,12 +79,14 @@ const PostAddNew = () => {
     setLoading(true);
     try {
       const cloneValue = { ...values };
-      cloneValue.slug = slugify(values.slug || values.title, { lower: true });
+      cloneValue.slug = slugify(values.title, { lower: true });
       cloneValue.status = Number(values.status);
+      cloneValue.author = userInfo?.displayName;
 
       const colRef = collection(db, "posts");
       await addDoc(colRef, {
         ...cloneValue,
+        content: content,
         image,
         userId: userInfo.uid,
         createdAt: serverTimestamp(),
@@ -93,6 +104,7 @@ const PostAddNew = () => {
       handleResetUpload();
       setSelectCategory({});
     } catch (error) {
+      toast.error("Can't register for auction!");
       setLoading(false);
     } finally {
       setLoading(false);
@@ -121,9 +133,35 @@ const PostAddNew = () => {
     setSelectCategory(category);
   };
 
+  const module = useMemo(
+    () => ({
+      toolbar: [
+        ["bold", "italic", "underline", "strike"],
+        ["blockquote"],
+        [{ header: 1 }, { header: 2 }], // custom button values
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ["link", "image"],
+      ],
+      imageUploader: {
+        upload: (file) => {
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+              resolve("https://source.unsplash.com/FV3GConVSss/900x500");
+            }, 3500);
+          });
+        },
+      },
+    }),
+    []
+  );
+
   return (
     <PostAddNewStyles>
-      <h1 className="dashboard-heading">Create auction</h1>
+      <DashboardHeading
+        title="Create auction"
+        desc="Register your bid package"
+      ></DashboardHeading>
       <form onSubmit={handleSubmit(addPostHandler)}>
         <div className="grid grid-cols-2 gap-x-10 mb-10">
           <Field>
@@ -143,13 +181,33 @@ const PostAddNew = () => {
               placeholder="Find the author"
             ></Input>
           </Field>
-          <Field>
+          {/* <Field>
             <Label>Slug</Label>
             <Input
               control={control}
               placeholder="Enter your slug"
               name="slug"
             ></Input>
+          </Field> */}
+          <Field>
+            <Label>Category</Label>
+            <Dropdown>
+              <Dropdown.Select
+                placeholder={`${selectCategory?.name || "Choose auction type"}`}
+              ></Dropdown.Select>
+              <Dropdown.List>
+                {categories &&
+                  categories.length > 0 &&
+                  categories.map((category) => (
+                    <Dropdown.Option
+                      key={category.id}
+                      onClick={() => handleClickOption(category)}
+                    >
+                      {category.name}
+                    </Dropdown.Option>
+                  ))}
+              </Dropdown.List>
+            </Dropdown>
           </Field>
           <Field>
             <Label>Status</Label>
@@ -195,36 +253,22 @@ const PostAddNew = () => {
               image={image}
             ></ImageUpload>
           </Field>
-          <div className="flex flex-row justify-between transition-all">
-            <div className="flex-1 mr-20">
-              <Field>
-                <Label>Category</Label>
-                <Dropdown>
-                  <Dropdown.Select
-                    placeholder={`${
-                      selectCategory?.name || "Choose auction type"
-                    }`}
-                  ></Dropdown.Select>
-                  <Dropdown.List>
-                    {categories &&
-                      categories.length > 0 &&
-                      categories.map((category) => (
-                        <Dropdown.Option
-                          key={category.id}
-                          onClick={() => handleClickOption(category)}
-                        >
-                          {category.name}
-                        </Dropdown.Option>
-                      ))}
-                  </Dropdown.List>
-                </Dropdown>
-                {/* {selectCategory.name && (
-                  <span className="inline-block p-3 rounded-lg bg-gray-200 text-sm font-medium">
-                    {selectCategory.name}
-                  </span>
-                )} */}
-              </Field>
-            </div>
+          <Field>
+            <Label>Enter your detail</Label>
+            {/* <Input
+                control={control}
+                name="detail"
+                className="min-h-[100px]"
+              ></Input> */}
+            <ReactQuill
+              className="w-full min-h-[200px] entry-content"
+              modules={module}
+              theme="snow"
+              value={content}
+              onChange={setContent}
+            ></ReactQuill>
+          </Field>
+          <div className="flex flex-row justify-between transition-all gap-x-10">
             <Field>
               <div className="flex flex-col items-center gap-y-[30px]">
                 <Label>Feature auction</Label>
@@ -236,6 +280,7 @@ const PostAddNew = () => {
             </Field>
           </div>
         </div>
+
         <Button
           type="submit"
           className="mx-auto w-[260px]"
