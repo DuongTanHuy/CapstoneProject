@@ -1,4 +1,5 @@
 /// SPDX-License-Identifier: MIT
+pragma experimental ABIEncoderV2;
 pragma solidity >=0.4.22 <0.9.0;
 
 /// @title The contract for buying and selling items on a market
@@ -39,6 +40,7 @@ contract BlindAuction {
         bool ended;
         string item_name;
         string item_description;
+        uint256 start_price;
         bool sold;
         address payable highestBidder;
         uint256 highestBid;
@@ -74,6 +76,7 @@ contract BlindAuction {
         bool ended;
         string item_name;
         string item_description;
+        uint256 start_price;
         bool bidplaced;
         bool revealed;
     }
@@ -102,6 +105,7 @@ contract BlindAuction {
         bool sold;
         string item_name;
         string item_description;
+        uint256 start_price;
         bool bidplaced;
         bool revealed;
         uint256 finalBid;
@@ -129,7 +133,8 @@ contract BlindAuction {
     event AuctionStarted(
         uint256 Auction_id,
         string item_name,
-        string item_description
+        string item_description,
+        uint256 start_price
     );
 
     /// @dev this event to annouce auction started
@@ -306,6 +311,10 @@ contract BlindAuction {
         );
         _;
     }
+        modifier highestBid (uint256 auction_id, uint256 blindedBid) {
+        require (blindedBid < Auctions[auction_id].start_price, "Gia cua ban thap hon gia khoi diem");
+        _;
+    }
 
     //functions
 
@@ -322,11 +331,14 @@ contract BlindAuction {
     /// @dev function to list the auction of a new item
     /// @param item_name name of the item
     /// @param item_description is the description of the item
+     /// @param start_price how long the reveal will go
     /// @param bidding_time how long the bidding will go
     /// @param reveal_time how long the reveal will go
+
     function auctionItem(
         string calldata item_name,
         string calldata item_description,
+        uint256 start_price,
         uint256 bidding_time,
         uint256 reveal_time
     ) external payable {
@@ -344,6 +356,7 @@ contract BlindAuction {
             n.ended = false;
             n.item_name;
             n.item_description;
+            n.start_price;
             n.sold = false;
             n.highestBidder;
             n.highestBid = 0;
@@ -351,7 +364,7 @@ contract BlindAuction {
             n.winner;
             n.winningBid;
             n.H;
-        emit AuctionStarted(auction_id, item_name, item_description);
+        emit AuctionStarted(auction_id, item_name, item_description, start_price);
         emit BiddingStarted(auction_id, bidding_end);
     }
 
@@ -379,6 +392,7 @@ contract BlindAuction {
                     currentauction.ended,
                     currentauction.item_name,
                     currentauction.item_description,
+                    currentauction.start_price,
                     currentauction.bidded[msg.sender],
                     currentauction.revealed[msg.sender]
                 );
@@ -414,6 +428,7 @@ contract BlindAuction {
                 currentauction.sold,
                 currentauction.item_name,
                 currentauction.item_description,
+                currentauction.start_price,
                 currentauction.bidded[msg.sender],
                 currentauction.revealed[msg.sender],
                 currentauction.highestBid,

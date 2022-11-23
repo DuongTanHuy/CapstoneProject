@@ -6,7 +6,8 @@ import { Label } from "components/label";
 import DashboardHeading from "components/module/dashboard/DashboardHeading";
 import TextAreaAutoReSize from "components/textarea/TextAreaAutoReSize";
 import { useAuth } from "contexts/auth-context";
-import { db } from "firebase-app/firebase-config";
+import { auth, db } from "firebase-app/firebase-config";
+import { signOut } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import useHandleImage from "hooks/useHandleImage";
 import { useEffect } from "react";
@@ -14,6 +15,8 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+// import Web3 from "web3";
+// import BlindAuction from "../../contracts/BlindAuction.json";
 
 const UserProfile = () => {
   const [params] = useSearchParams();
@@ -101,6 +104,62 @@ const UserProfile = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleSignOut = () => {
+    signOut(auth);
+    navigate("/");
+  };
+
+  const handleConnect = async () => {
+    // const web3 = new Web3(window.ethereum);
+    // const init = async () => {
+    //   if (this.state.initialised === false) return;
+    //   const { blind_contract, market, web3 } = this.state;
+    //   const accounts = await web3.eth.getAccounts();
+    //   this.setState({ accounts });
+    //   const response = await web3.eth.getBalance(accounts[0]);
+    //   // Update state with the result.
+    //   this.eventcheck(market, blind_contract);
+    //   console.log(response);
+    // };
+
+    // try {
+    //   if (window.ethereum) {
+    //     // Do something
+    //   } else {
+    //     alert("install metamask extension!!");
+    //   }
+    //   const accounts = window.ethereum
+    //     .request({ method: "eth_requestAccounts" })
+    //     .then((res) => {
+    //       // Return the address of the wallet
+    //       console.log(res);
+    //     });
+
+    //   const networkId = await web3.eth.net.getId();
+    //   const deployedNetwork2 = BlindAuction.networks[networkId];
+    //   const instance2 = await new web3.eth.Contract(
+    //     BlindAuction.abi,
+    //     deployedNetwork2 && deployedNetwork2.address
+    //   );
+    //   instance2.options.address = deployedNetwork2.address;
+    //   //console.log(instance2);
+    //   init();
+    //   this.setState(
+    //     {
+    //       web3,
+    //       accounts,
+    //       blind_contract: instance2,
+
+    //       initialised: true,
+    //       currentAccount: accounts[0],
+    //     },
+    //     this.init
+    //   );
+    // } catch (e) {
+    //   console.log(`Error: ${e.message}`);
+    // }
+  };
+
   return (
     <div>
       <DashboardHeading
@@ -109,15 +168,21 @@ const UserProfile = () => {
       ></DashboardHeading>
       <form onSubmit={handleSubmit(handleUpdate)}>
         <div className="text-center mb-10">
-          <Button
-            isLoading={isSubmitting}
-            disabled={isSubmitting}
-            kind="primary"
-            type="submit"
-            className="ml-auto w-[200px]"
-          >
-            Update
-          </Button>
+          <div className="flex flex-row items-center justify-end">
+            <div className="flex flex-row gap-x-3 mr-3">
+              <Button onClick={handleConnect}>Connect MetaMask</Button>
+              <Button
+                isLoading={isSubmitting}
+                disabled={isSubmitting}
+                kind="primary"
+                type="submit"
+                className="mr-auto w-[200px]"
+              >
+                Update
+              </Button>
+            </div>
+            <Button onClick={handleSignOut}>SignOut</Button>
+          </div>
           <ImageUpload
             onChange={handleSelectImage}
             handleDeleteImg={handleDeleteImg}
