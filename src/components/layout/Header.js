@@ -91,7 +91,7 @@ const Header = () => {
       });
       setNotify(result);
     });
-  }, [userInfo.uid]);
+  }, [userInfo?.uid]);
 
   return (
     <HeaderStyles>
@@ -118,7 +118,7 @@ const Header = () => {
               </li>
             ))}
           </ul>
-          <div className="ml-auto z-10">
+          <div className="ml-auto z-10 cursor-pointer">
             <li className="list-none flex items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -147,8 +147,8 @@ const Header = () => {
                   </li>
                   {notify.length > 0 &&
                     notify.map((item) => (
-                      <li key={item.id} className="p-3">
-                        <p className="flex flex-row items-center justify-start gap-x-6 text-gray-500">
+                      <li key={item.id} className="p-3 hover:bg-gray-100">
+                        <p className=" text-gray-500">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -163,7 +163,7 @@ const Header = () => {
                               d="M4.5 12.75l6 6 9-13.5"
                             />
                           </svg>
-                          {item.content}
+                          <span> {item.content} </span>
                           <span className="text-gray-300">{formatDate}</span>
                         </p>
                       </li>

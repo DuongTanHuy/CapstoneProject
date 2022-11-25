@@ -55,7 +55,6 @@ class CreateAuctions extends Component {
     
   };
 
-
   render() {
     return (
       <>

@@ -75,11 +75,13 @@ const PostItem = ({ data }) => {
       <PostTitle to={`${data.slug}?id=${data.id}`} size="normal">
         {data.title}
       </PostTitle>
-      <PostMeta
-        date={formatDate}
-        to={slugify(data?.author || "", { lower: true })}
-        authorName={data?.author}
-      ></PostMeta>
+      <div className="absolute bottom-0">
+        <PostMeta
+          date={formatDate}
+          to={slugify(data?.author || "", { lower: true })}
+          authorName={data?.author}
+        ></PostMeta>
+      </div>
     </PostItemStyles>
   );
 };
