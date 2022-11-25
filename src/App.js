@@ -1,13 +1,14 @@
 import { AuthProvider } from "contexts/auth-context";
+import { Fragment } from "react";
 import SubApp from "SubApp";
 
 function App() {
   return (
-    <div>
+    <Fragment>
       <AuthProvider>
         <SubApp></SubApp>
       </AuthProvider>
-    </div>
+    </Fragment>
   );
 }
 

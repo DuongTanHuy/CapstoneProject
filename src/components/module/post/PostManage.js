@@ -81,10 +81,6 @@ const AuctionPage = () => {
   }, [filter, userInfo.uid]);
 
   const handleDeletePost = async (post) => {
-    if (post.status === 1) {
-      toast.warn("Unable to delete because your bid has been approved!");
-      return;
-    }
     const colRef = doc(db, "posts", post?.id);
 
     Swal.fire({
@@ -104,12 +100,12 @@ const AuctionPage = () => {
   };
 
   const handleEdit = (post) => {
-    if (post.status === 1) {
-      toast.warn("Unable to update because your bid has been approved!");
-      return;
-    }
     navigate(`/auction/update-auction?id=${post.id}`);
   };
+
+  const handleView = (post)=>{
+    navigate(`/auction/details?id=${post.id}`)
+  }
 
   const handleFilterChange = lodash.debounce(
     (event) => setFilter(event.target.value),
@@ -218,7 +214,7 @@ const AuctionPage = () => {
                 </td>
                 <td>
                   <div className="flex items-center gap-x-3">
-                    <ActionView></ActionView>
+                    <ActionView onClick={()=> handleView(post)}></ActionView>
                     <ActionEdit onClick={() => handleEdit(post)}></ActionEdit>
                     <ActionDelete
                       onClick={() => handleDeletePost(post)}

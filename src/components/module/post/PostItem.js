@@ -1,4 +1,7 @@
-import React from "react";
+import { db } from "firebase-app/firebase-config";
+import { doc, getDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import slugify from "slugify";
 import styled from "styled-components";
 import PostCategory from "./PostCategory";
 import PostImage from "./PostImage";
@@ -41,13 +44,42 @@ const PostItemStyles = styled.div`
   }
 `;
 
-const PostItem = () => {
+const PostItem = ({ data }) => {
+  const [categories, setCategories] = useState();
+  // const [user, setUser] = useState();
+  const date = data?.createdAt.seconds
+    ? new Date(data?.createdAt.seconds * 1000)
+    : new Date();
+  const formatDate = new Date(date).toLocaleDateString("vi-VI");
+
+  useEffect(() => {
+    async function fetchCategory() {
+      if (data?.userId) {
+        const docRef = doc(db, "categories", data.categoryId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap) setCategories(docSnap.data());
+      }
+    }
+
+    fetchCategory();
+  }, [data?.categoryId, data?.userId]);
+
+  if (!data || !data.id) return null;
+
   return (
     <PostItemStyles>
-        <PostImage url="https://images.unsplash.com/photo-1661961110372-8a7682543120?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80"></PostImage>
-      <PostCategory>Participate</PostCategory>
-      <PostTitle>Auction phone Vertu Aster P</PostTitle>
-      <PostMeta></PostMeta>
+      <PostImage url={data.image}></PostImage>
+      {categories?.name && (
+        <PostCategory to={categories?.slug}>{categories?.name}</PostCategory>
+      )}
+      <PostTitle to={`${data.slug}?id=${data.id}`} size="normal">
+        {data.title}
+      </PostTitle>
+      <PostMeta
+        date={formatDate}
+        to={slugify(data?.author || "", { lower: true })}
+        authorName={data?.author}
+      ></PostMeta>
     </PostItemStyles>
   );
 };

@@ -1,5 +1,4 @@
 import Heading from "components/layout/Heading";
-import Layout from "components/layout/Layout";
 import PostCategory from "components/module/post/PostCategory";
 import PostImage from "components/module/post/PostImage";
 import PostItem from "components/module/post/PostItem";
@@ -151,57 +150,45 @@ const PostDetailsPage = () => {
 
   return (
     <PostDetailsPageStyles>
-      <Layout>
-        <div className="container">
-          <div className="post-header">
-            <PostImage
-              url={postDetail.image}
-              className="post-feature"
-            ></PostImage>
-            <div className="post-info">
-              <PostCategory className="mb-6">{category.name}</PostCategory>
-              <h1 className="post-heading">{postDetail.title}</h1>
-              <PostMeta
-                authorName={postDetail.author}
-                date={formatDate}
-              ></PostMeta>
-            </div>
+      <div className="container">
+        <div className="post-header">
+          <PostImage
+            url={postDetail.image}
+            className="post-feature"
+          ></PostImage>
+          <div className="post-info">
+            <PostCategory className="mb-6">{category.name}</PostCategory>
+            <h1 className="post-heading">{postDetail.title}</h1>
+            <PostMeta
+              authorName={postDetail.author}
+              date={formatDate}
+            ></PostMeta>
           </div>
-          <div className="post-content">
-            <h2>Detail product</h2>
-            <div className="entry-content">
-              <div>{parse(postDetail?.content || "")}</div>
-              {/* <figure>
-                <img
-                  src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80"
-                  alt=""
-                />
-                <figcaption>
-                  Gastronomy atmosphere set aside. Slice butternut cooking home.
-                </figcaption>
-              </figure> */}
-            </div>
-            <div className="author">
-              <div className="author-image">
-                <img src={user?.avatar} alt="" />
-              </div>
-              <div className="author-content">
-                <h3 className="author-name">{user?.userName}</h3>
-                <p className="author-desc">{user?.description}</p>
-              </div>
-            </div>
+        </div>
+        <div className="post-content">
+          <div className="entry-content">
+            <div>{parse(postDetail?.content || "")}</div>
           </div>
-          <div className="post-related">
-            <Heading>Related Posts</Heading>
-            <div className="grid-layout grid-layout--primary">
-              <PostItem></PostItem>
-              <PostItem></PostItem>
-              <PostItem></PostItem>
-              <PostItem></PostItem>
+          <div className="author">
+            <div className="author-image">
+              <img src={user?.avatar} alt="" />
+            </div>
+            <div className="author-content">
+              <h3 className="author-name">{user?.userName}</h3>
+              <p className="author-desc">{user?.description}</p>
             </div>
           </div>
         </div>
-      </Layout>
+        <div className="post-related">
+          <Heading>Related Posts</Heading>
+          <div className="grid-layout grid-layout--primary">
+            <PostItem></PostItem>
+            <PostItem></PostItem>
+            <PostItem></PostItem>
+            <PostItem></PostItem>
+          </div>
+        </div>
+      </div>
     </PostDetailsPageStyles>
   );
 };

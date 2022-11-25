@@ -1,5 +1,5 @@
 import { Button } from "components/button";
-// import { Radio } from "components/checkbox";
+import { Radio } from "components/checkbox";
 import { Dropdown } from "components/dropdown";
 import { Field } from "components/field";
 import ImageUpload from "components/image/ImageUpload";
@@ -8,11 +8,13 @@ import { Label } from "components/label";
 import Toggle from "components/toggle/Toggle";
 import { db } from "firebase-app/firebase-config";
 import {
+  addDoc,
   collection,
   doc,
   getDoc,
   getDocs,
   query,
+  serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
 import useHandleImage from "hooks/useHandleImage";
@@ -20,15 +22,15 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
-// import { postStatus } from "untils/constants";
-import DashboardHeading from "../dashboard/DashboardHeading";
+import { postStatus } from "untils/constants";
 import "react-quill/dist/quill.snow.css";
 import ImageUploader from "quill-image-uploader";
 import ReactQuill, { Quill } from "react-quill";
+import DashboardHeading from "components/module/dashboard/DashboardHeading";
 
 Quill.register("modules/imageUploader", ImageUploader);
 
-const PostUpdate = () => {
+const ManagePostUpdate = () => {
   const {
     control,
     handleSubmit,
@@ -57,14 +59,13 @@ const PostUpdate = () => {
   const postId = params.get("id");
   const navigate = useNavigate();
 
-  // const watchStatus = watch("status");
+  const watchStatus = watch("status");
   const watchHot = watch("hot");
   const [categories, setCategories] = useState([]);
   const [selectCategory, setSelectCategory] = useState("");
   const [content, setContent] = useState("");
 
-  const { image, setImage, progress, handleSelectImage, handleDeleteImg } =
-    useHandleImage(setValue, getValues);
+  const { image, setImage } = useHandleImage(setValue, getValues);
 
   useEffect(() => {
     async function fetchDate() {
@@ -103,16 +104,22 @@ const PostUpdate = () => {
     getData();
   }, []);
 
-  const handleClickOption = (category) => {
-    setValue("categoryId", category.id);
-    setSelectCategory(category);
+  const handleNotification = async (values) => {
+    const colRef = collection(db, "notify");
+    await addDoc(colRef, {
+      content: `Your bid: ${values.title} has been ${
+        Number(values.status) === 1 ? "accepted" : "rejected"
+      }`,
+      userId: values.userId,
+      createdAt: serverTimestamp(),
+    });
   };
 
   const handleUpdate = (values) => {
     if (!isValid) return;
+    console.log(values);
 
     const colRef = doc(db, "posts", postId);
-
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -124,17 +131,14 @@ const PostUpdate = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await updateDoc(colRef, {
-          author: values.author,
-          title: values.title,
-          categoryId: values.categoryId,
-          image: image,
-          imageName: values.imageName,
           status: Number(values.status),
         });
 
+        handleNotification(values);
+
         Swal.fire("Updated!", "Your file has been update.", "success");
 
-        navigate("/auction");
+        navigate("/manage/pending");
       }
     });
   };
@@ -169,6 +173,7 @@ const PostUpdate = () => {
               control={control}
               placeholder="Enter your title"
               name="title"
+              readOnly
               required
             ></Input>
           </Field>
@@ -178,6 +183,7 @@ const PostUpdate = () => {
               name="author"
               control={control}
               placeholder="Find the author"
+              readOnly
             ></Input>
           </Field>
           {/* <Field>
@@ -194,22 +200,10 @@ const PostUpdate = () => {
               <Dropdown.Select
                 placeholder={`${selectCategory?.name || "Choose auction type"}`}
               ></Dropdown.Select>
-              <Dropdown.List>
-                {categories &&
-                  categories.length > 0 &&
-                  categories.map((category) => (
-                    <Dropdown.Option
-                      key={category.id}
-                      onClick={() => handleClickOption(category)}
-                    >
-                      {category.name}
-                    </Dropdown.Option>
-                  ))}
-              </Dropdown.List>
             </Dropdown>
           </Field>
           <Field>
-            {/* <Label>Status</Label>
+            <Label>Status</Label>
             <div className="flex items-center gap-x-5">
               <Radio
                 name="status"
@@ -238,17 +232,18 @@ const PostUpdate = () => {
               >
                 Reject
               </Radio>
-            </div> */}
+            </div>
           </Field>
         </div>
         <div className="grid grid-cols-2 gap-x-10 mb-3">
           <Field>
             <Label>Image</Label>
             <ImageUpload
-              onChange={handleSelectImage}
-              handleDeleteImg={handleDeleteImg}
+              onClick={(event) => {
+                event.preventDefault();
+                console.log("Your can't upload image");
+              }}
               className="h-[250px]"
-              progress={progress}
               image={image}
             ></ImageUpload>
           </Field>
@@ -265,6 +260,7 @@ const PostUpdate = () => {
               theme="snow"
               value={content}
               onChange={setContent}
+              readOnly
             ></ReactQuill>
           </Field>
           <div className="flex flex-row justify-between transition-all">
@@ -292,4 +288,4 @@ const PostUpdate = () => {
   );
 };
 
-export default PostUpdate;
+export default ManagePostUpdate;

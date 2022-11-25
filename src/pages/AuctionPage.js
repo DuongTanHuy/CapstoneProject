@@ -119,6 +119,10 @@ const AuctionPage = () => {
     navigate(`/auction/update-auction?id=${post.id}`);
   };
 
+  const handleView = (post) => {
+    navigate(`/${post.slug}?id=${post.id}`);
+  };
+
   const handleFilterChange = lodash.debounce(
     (event) => setFilter(event.target.value),
     1000
@@ -197,9 +201,10 @@ const AuctionPage = () => {
                     />
                     <div className="flex-1">
                       <h3 className="font-semibold">{post.title}</h3>
-                      <time className="text-sm text-gray-500"><span>Date: </span>
+                      <time className="text-sm text-gray-500">
+                        <span>Date: </span>
                         {new Date(
-                          post.createdAt.seconds * 1000
+                          post.createdAt?.seconds * 1000
                         ).toLocaleDateString("vi-VI")}
                       </time>
                     </div>
@@ -228,7 +233,7 @@ const AuctionPage = () => {
                 </td>
                 <td>
                   <div className="flex items-center gap-x-3">
-                    <ActionView></ActionView>
+                    <ActionView onClick={() => handleView(post)}></ActionView>
                     <ActionEdit onClick={() => handleEdit(post)}></ActionEdit>
                     <ActionDelete
                       onClick={() => handleDeletePost(post)}

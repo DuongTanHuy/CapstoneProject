@@ -3,6 +3,8 @@ import { db } from "firebase-app/firebase-config";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/scss";
 import PostFeatureItem from "../post/PostFeatureItem";
 const HomeFeatureStyles = styled.div``;
 
@@ -33,11 +35,19 @@ const HomeFeature = () => {
     <HomeFeatureStyles className="home-block">
       <div className="container">
         <Heading>Feature</Heading>
-        <div className="grid-layout">
+        <Swiper
+          className="grid-layout"
+          grabCursor={"true"}
+          spaceBetween={46}
+          scrollbar={{ draggable: true }}
+          slidesPerView={"auto"}
+        >
           {posts.map((post) => (
-            <PostFeatureItem key={post.id} data={post}></PostFeatureItem>
+            <SwiperSlide key={post.id}>
+              <PostFeatureItem data={post}></PostFeatureItem>
+            </SwiperSlide>
           ))}
-        </div>
+        </Swiper>
       </div>
     </HomeFeatureStyles>
   );

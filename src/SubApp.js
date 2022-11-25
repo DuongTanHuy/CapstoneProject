@@ -9,6 +9,7 @@ import CreateAuctions from "mainFunctions/CreateAuction";
 import AuctionPage from "pages/AuctionPage";
 import DashboardPage from "pages/DashboardPage";
 import HomePage from "pages/HomePage";
+import ManagePostUpdate from "pages/ManagePostUpdate";
 import NotFoundPage from "pages/NotFoundPage";
 import PostDetailsPage from "pages/PostDetailsPage";
 import SignInPage from "pages/SignInPage";
@@ -37,6 +38,14 @@ function SubApp() {
               <Route
                 path="/manage/pending"
                 element={<PostManage></PostManage>}
+              ></Route>
+              <Route
+                path="/auction/update-auction"
+                element={<ManagePostUpdate></ManagePostUpdate>}
+              ></Route>
+              <Route
+                path="/auction/details"
+                element={<PostDetailsPage></PostDetailsPage>}
               ></Route>
               <Route
                 path="/manage/user"
@@ -69,14 +78,13 @@ function SubApp() {
                 path="/profile"
                 element={<UserProfile></UserProfile>}
               ></Route>
+              <Route
+                path="/:slug"
+                element={<PostDetailsPage></PostDetailsPage>}
+              ></Route>
             </Route>
 
             <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
-
-            <Route
-              path="/:slug"
-              element={<PostDetailsPage></PostDetailsPage>}
-            ></Route>
           </>
         )}
       </Routes>

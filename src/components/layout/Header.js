@@ -1,6 +1,8 @@
 import { Button } from "components/button";
 import { useAuth } from "contexts/auth-context";
-import React from "react";
+import { db } from "firebase-app/firebase-config";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 
@@ -36,7 +38,7 @@ const HeaderStyles = styled.header`
     margin-left: 40px;
   }
   .search {
-    margin-left: auto;
+    margin-left: 20px;
     padding: 16px 26px;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -66,6 +68,30 @@ const HeaderStyles = styled.header`
 
 const Header = () => {
   const { userInfo } = useAuth();
+  const [hit, setHit] = useState(false);
+  const [notify, setNotify] = useState([]);
+  const date = notify?.createdAt?.seconds
+    ? new Date(notify?.createdAt?.seconds * 1000)
+    : new Date();
+  const formatDate = new Date(date).toLocaleDateString("vi-VI");
+
+  useEffect(() => {
+    const colRef = collection(db, "notify");
+    const queries = query(
+      colRef, // set status (pending, apply...) tai day where("status","==", 1)
+      where("userId", "==", userInfo?.uid ? userInfo.uid : "")
+    );
+    onSnapshot(queries, (snapshot) => {
+      let result = [];
+      snapshot.forEach((doc) => {
+        result.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      setNotify(result);
+    });
+  }, [userInfo.uid]);
 
   return (
     <HeaderStyles>
@@ -92,6 +118,60 @@ const Header = () => {
               </li>
             ))}
           </ul>
+          <div className="ml-auto z-10">
+            <li className="list-none flex items-center justify-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-6 h-6"
+                onClick={() => setHit(!hit)}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
+                />
+              </svg>
+
+              <div
+                className={`transition-all rounded-lg max-w-[400px] bg-white shadow-lg ${
+                  hit ? "absolute top-14" : "hidden"
+                }`}
+              >
+                <ul>
+                  <li className="text-xl p-3 rounded-lg font-semibold bg-gray-200">
+                    <h6 className="f-18 mb-0">Notifications</h6>
+                  </li>
+                  {notify.length > 0 &&
+                    notify.map((item) => (
+                      <li key={item.id} className="p-3">
+                        <p className="flex flex-row items-center justify-start gap-x-6 text-gray-500">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.5"
+                            stroke="currentColor"
+                            className="w-6 h-6 inline-block text-green-500"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M4.5 12.75l6 6 9-13.5"
+                            />
+                          </svg>
+                          {item.content}
+                          <span className="text-gray-300">{formatDate}</span>
+                        </p>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            </li>
+          </div>
           <div className="search">
             <input type="text" className="search-input" placeholder="Search" />
             <span className="search-icon">
@@ -121,7 +201,7 @@ const Header = () => {
               Sign Up
             </Button>
           ) : (
-            <div className="header-auth">
+            <div className="header-auth flex flex-col items-center justify-center">
               <span>Welcome back! </span>
               <strong className="text-primary">{userInfo?.displayName}</strong>
             </div>

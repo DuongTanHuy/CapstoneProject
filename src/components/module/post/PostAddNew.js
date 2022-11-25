@@ -1,5 +1,5 @@
 import { Button } from "components/button";
-import { Radio } from "components/checkbox";
+// import { Radio } from "components/checkbox";
 import { Dropdown } from "components/dropdown";
 import { Field } from "components/field";
 import { Input } from "components/input";
@@ -8,7 +8,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import styled from "styled-components";
-import { postStatus } from "untils/constants";
+// import { postStatus } from "untils/constants";
 
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -28,6 +28,7 @@ import { db } from "firebase-app/firebase-config";
 import { useAuth } from "contexts/auth-context";
 import { toast } from "react-toastify";
 import DashboardHeading from "../dashboard/DashboardHeading";
+import { useNavigate } from "react-router-dom";
 
 const PostAddNewStyles = styled.div``;
 
@@ -35,6 +36,7 @@ Quill.register("modules/imageUploader", ImageUploader);
 
 const PostAddNew = () => {
   const { userInfo } = useAuth();
+  const navigate = useNavigate();
 
   const {
     control,
@@ -56,7 +58,7 @@ const PostAddNew = () => {
       image: "",
     },
   });
-  const watchStatus = watch("status");
+  // const watchStatus = watch("status");
   const watchHot = watch("hot");
   const [categories, setCategories] = useState([]);
   const [selectCategory, setSelectCategory] = useState("");
@@ -80,7 +82,7 @@ const PostAddNew = () => {
     try {
       const cloneValue = { ...values };
       cloneValue.slug = slugify(values.title, { lower: true });
-      cloneValue.status = Number(values.status);
+      cloneValue.status = Number(2);
       cloneValue.author = userInfo?.displayName;
 
       const colRef = collection(db, "posts");
@@ -101,8 +103,11 @@ const PostAddNew = () => {
         categoryId: "",
         image: "",
       });
+      setContent("");
       handleResetUpload();
       setSelectCategory({});
+
+      navigate("/auction");
     } catch (error) {
       toast.error("Can't register for auction!");
       setLoading(false);
@@ -138,7 +143,7 @@ const PostAddNew = () => {
       toolbar: [
         ["bold", "italic", "underline", "strike"],
         ["blockquote"],
-        [{ header: 1 }, { header: 2 }], // custom button values
+        [{ header: 1 }, { header: 2 }],
         [{ list: "ordered" }, { list: "bullet" }],
         [{ header: [1, 2, 3, 4, 5, 6, false] }],
         ["link", "image"],
@@ -201,7 +206,7 @@ const PostAddNew = () => {
             </Dropdown>
           </Field>
           <Field>
-            <Label>Status</Label>
+            {/* <Label>Status</Label>
             <div className="flex items-center gap-x-5">
               <Radio
                 name="status"
@@ -230,7 +235,7 @@ const PostAddNew = () => {
               >
                 Reject
               </Radio>
-            </div>
+            </div> */}
           </Field>
         </div>
         <div className="grid grid-cols-2 gap-x-10 mb-3">

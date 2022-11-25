@@ -121,7 +121,6 @@ const UserProfile = () => {
     //   this.eventcheck(market, blind_contract);
     //   console.log(response);
     // };
-
     // try {
     //   if (window.ethereum) {
     //     // Do something
@@ -134,7 +133,6 @@ const UserProfile = () => {
     //       // Return the address of the wallet
     //       console.log(res);
     //     });
-
     //   const networkId = await web3.eth.net.getId();
     //   const deployedNetwork2 = BlindAuction.networks[networkId];
     //   const instance2 = await new web3.eth.Contract(
@@ -149,7 +147,6 @@ const UserProfile = () => {
     //       web3,
     //       accounts,
     //       blind_contract: instance2,
-
     //       initialised: true,
     //       currentAccount: accounts[0],
     //     },
@@ -267,14 +264,16 @@ const UserProfile = () => {
             ></Input>
           </Field>
         </div>
-        <Field>
-          <Label>About your</Label>
-          <TextAreaAutoReSize
-            control={control}
-            name="description"
-            placeholder="About you"
-          ></TextAreaAutoReSize>
-        </Field>
+        <div className="mx-32 mb-10">
+          <Field>
+            <Label>About you</Label>
+            <TextAreaAutoReSize
+              control={control}
+              name="description"
+              placeholder="About you"
+            ></TextAreaAutoReSize>
+          </Field>
+        </div>
       </form>
     </div>
   );
