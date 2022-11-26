@@ -11,7 +11,13 @@ const PostImageStyles = styled.div`
   }
 `;
 
-const PostImage = ({ className = "", url = "", alt = "Image", to = null, id=""}) => {
+const PostImage = ({
+  className = "",
+  url = "",
+  alt = "Image",
+  to = null,
+  id = "",
+}) => {
   if (to)
     return (
       <NavLink to={to} style={{ display: "block" }}>
