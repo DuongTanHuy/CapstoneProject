@@ -137,35 +137,72 @@ const Header = () => {
               </svg>
 
               <div
-                className={`transition-all rounded-lg max-w-[400px] bg-white shadow-lg ${
+                className={`transition-all shadow-2xl rounded-lg max-w-[400px] bg-white ${
                   hit ? "absolute top-14" : "hidden"
                 }`}
               >
                 <ul>
-                  <li className="text-xl p-3 rounded-lg font-semibold bg-gray-200">
+                  <li className="text-xl p-3 rounded-lg rounded-b-none font-semibold bg-gray-200">
                     <h6 className="f-18 mb-0">Notifications</h6>
                   </li>
                   {notify.length > 0 &&
                     notify.map((item) => (
-                      <li key={item.id} className="p-3 hover:bg-gray-100">
-                        <p className=" text-gray-500">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth="1.5"
-                            stroke="currentColor"
-                            className="w-6 h-6 inline-block text-green-500"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M4.5 12.75l6 6 9-13.5"
-                            />
-                          </svg>
-                          <span> {item.content} </span>
-                          <span className="text-gray-300">{formatDate}</span>
-                        </p>
+                      <li
+                        key={item.id}
+                        className="p-3 hover:bg-gray-100 rounded-lg rounded-t-none"
+                      >
+                        {item.status === 1 ? (
+                          <p className=" text-gray-500">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="1.5"
+                              stroke="currentColor"
+                              className="w-6 h-6 inline-block text-green-500"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M4.5 12.75l6 6 9-13.5"
+                              />
+                            </svg>
+                            <span>
+                              {item.content}
+                              <span className="text-green-500">accepted</span>
+                            </span>
+                            <span className="text-gray-300">
+                              {" "}
+                              {formatDate}{" "}
+                            </span>
+                          </p>
+                        ) : (
+                          <p className=" text-gray-500">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="1.5"
+                              stroke="currentColor"
+                              className="w-6 h-6 inline-block text-red-500"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                            <span>
+                              {" "}
+                              {item.content}{" "}
+                              <span className="text-red-500">rejected</span>
+                            </span>
+                            <span className="text-gray-300">
+                              {" "}
+                              {formatDate}{" "}
+                            </span>
+                          </p>
+                        )}
                       </li>
                     ))}
                 </ul>
