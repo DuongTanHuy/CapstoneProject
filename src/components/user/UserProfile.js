@@ -15,8 +15,6 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
-// import Web3 from "web3";
-// import BlindAuction from "../../contracts/BlindAuction.json";
 
 const UserProfile = () => {
   const [params] = useSearchParams();
@@ -110,51 +108,21 @@ const UserProfile = () => {
   };
 
   const handleConnect = async () => {
-    // const web3 = new Web3(window.ethereum);
-    // const init = async () => {
-    //   if (this.state.initialised === false) return;
-    //   const { blind_contract, market, web3 } = this.state;
-    //   const accounts = await web3.eth.getAccounts();
-    //   this.setState({ accounts });
-    //   const response = await web3.eth.getBalance(accounts[0]);
-    //   // Update state with the result.
-    //   this.eventcheck(market, blind_contract);
-    //   console.log(response);
-    // };
-    // try {
-    //   if (window.ethereum) {
-    //     // Do something
-    //   } else {
-    //     alert("install metamask extension!!");
-    //   }
-    //   const accounts = window.ethereum
-    //     .request({ method: "eth_requestAccounts" })
-    //     .then((res) => {
-    //       // Return the address of the wallet
-    //       console.log(res);
-    //     });
-    //   const networkId = await web3.eth.net.getId();
-    //   const deployedNetwork2 = BlindAuction.networks[networkId];
-    //   const instance2 = await new web3.eth.Contract(
-    //     BlindAuction.abi,
-    //     deployedNetwork2 && deployedNetwork2.address
-    //   );
-    //   instance2.options.address = deployedNetwork2.address;
-    //   //console.log(instance2);
-    //   init();
-    //   this.setState(
-    //     {
-    //       web3,
-    //       accounts,
-    //       blind_contract: instance2,
-    //       initialised: true,
-    //       currentAccount: accounts[0],
-    //     },
-    //     this.init
-    //   );
-    // } catch (e) {
-    //   console.log(`Error: ${e.message}`);
-    // }
+    // const web3 = await getWeb3();
+    // const accounts = await web3.eth.getAccounts();
+    // const networkId = await web3.eth.net.getId();
+    // const deployedNetwork2 = BlindAuction.networks[networkId];
+    // const instance2 = await new web3.eth.Contract(
+    //   BlindAuction.abi,
+    //   deployedNetwork2 && deployedNetwork2.address
+    // );
+    // instance2.options.address = deployedNetwork2?.address;
+    // setWeb3(web3);
+    // setAccounts(accounts);
+    // setBlindContract(instance2);
+    // setInit(true);
+    // setCurrentAccounts(accounts[0]);
+    // init();
   };
 
   return (

@@ -11,15 +11,20 @@ const PostItemStyles = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  border-radius: 16px;
+  :hover img {
+    transform: scale(1.1);
+    transition: all 0.1s linear;
+  }
   .post {
     &-image {
       height: 202px;
-      margin-bottom: 20px;
       display: block;
       width: 100%;
       border-radius: 16px;
     }
     &-category {
+      margin-top: 20px;
       margin-bottom: 16px;
     }
     &-info {
@@ -68,7 +73,9 @@ const PostItem = ({ data }) => {
 
   return (
     <PostItemStyles>
-      <PostImage url={data.image}></PostImage>
+      <div className="w-full h-[202px] rounded-2xl overflow-hidden">
+        <PostImage url={data.image}></PostImage>
+      </div>
       {categories?.name && (
         <PostCategory to={categories?.slug}>{categories?.name}</PostCategory>
       )}

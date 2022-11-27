@@ -1,37 +1,15 @@
 /// SPDX-License-Identifier: MIT
+pragma solidity ^0.5.1;
 pragma experimental ABIEncoderV2;
-pragma solidity >=0.4.22 <0.9.0;
 
 /// @title The contract for buying and selling items on a market
 contract BlindAuction {
-    // Important Structures
 
-    ///@dev stores the blinded bid
-    ///@param bidHash stores the bid hashed using the public pub_key
-    ///@param deposit stores the deposited amount
     struct Bid {
         bytes32 bidHash;
         uint256 deposit;
     }
 
-    /// @dev structure for each Auction item
-    /// @param auction_id unique id for the items
-    /// @param beneficiary the seller
-    /// @param biddingEnd time the bidding end
-    /// @param revealEnd time when reveal period is over
-    /// @param ended shows the auction ended
-    /// @param item_name shows name of the item
-    /// @param item_description description of the item
-    /// @param bids stores the list of bids indexed by address
-    /// @param sold bool to denote whether the item is sold or not
-    /// @param highestBidder address of the highest bidder
-    /// @param highestBid value of the highest bid
-    /// @param revealedBidders the array to store bidders who reveal their bid to return their due after auction is over
-    /// @param pendingReturns the value to return to each bidder
-    /// @param bidded the boolean to track which addresses have bidded.
-    /// @param revealed the boolean to track which addresses have revealed.
-    /// @param pubkey stores the pubkeys of the bidders sent over with the bids
-    /// @param H secret string to sell item encrypted with buyer's public key
     struct auctions {
         uint256 auction_id;
         address payable beneficiary;
@@ -49,25 +27,12 @@ contract BlindAuction {
         uint256 winningBid;
         string H;
         mapping(address => Bid) bids;
-        // Allowed withdrawals of previous bids
         mapping(address => uint256) pendingReturns;
         mapping(address => bool) bidded;
         mapping(address => bool) revealed;
         mapping(address => string) pubkey;
     }
-    uint numRequests;
-    mapping (uint => auctions) rq;
 
-    /// @dev structure for each display active Auction Listings
-    /// @param auction_id unique id for the items
-    /// @param beneficiary address of the owner of item to be auctioned
-    /// @param biddingEnd time the bidding end
-    /// @param revealEnd time when reveal period is over
-    /// @param ended shows the auction ended
-    /// @param item_name shows name of the item
-    /// @param item_description description of the item
-    /// @param bidplaced bool to tell whether the person calling the function bidded or not
-    /// @param revealed bool to tell whether the person calling the revealed their bid or not
     struct auction_active_listings {
         uint256 auction_id;
         address payable beneficiary;
@@ -81,20 +46,6 @@ contract BlindAuction {
         bool revealed;
     }
 
-    /// @dev structure for each display Auction Listings
-    /// @param auction_id unique id for the items
-    /// @param beneficiary address of the owner of item to be auctioned
-    /// @param winner address of the winner of the auction
-    /// @param biddingEnd time the bidding end
-    /// @param revealEnd time when reveal period is over
-    /// @param ended shows the auction ended
-    /// @param item_name shows name of the item
-    /// @param item_description description of the item
-    /// @param bidplaced bool to tell whether the person calling the function bidded or not
-    /// @param revealed bool to tell whether the person calling the revealed their bid or not
-    /// @param finalBid the final price at which the item was sold
-    /// @param pubkey public key of the winner
-    /// @param H secret string to sell item encrypted with buyer's public key
     struct auction_all_listings {
         uint256 auction_id;
         address payable beneficiary;
@@ -113,23 +64,7 @@ contract BlindAuction {
         string H;
     }
 
-    // Errors that describe failures.
 
-    /// The function has been called too early.
-    /// Try again at `time`.
-    //error TooEarly(uint time);
-    /// The function has been called too late.
-    /// It cannot be called after `time`.
-    //error TooLate(uint time);
-    /// The function auctionEnd has already been called.
-    //error AuctionEndAlreadyCalled();
-
-    /// EVENTS
-
-    /// @dev this event is for when auction item is for when item for auction is listed
-    /// @param Auction_id id of the auction
-    /// @param item_name  name of the item to be Auction
-    /// @param item_description  description of the item to be auctioned
     event AuctionStarted(
         uint256 Auction_id,
         string item_name,
@@ -137,10 +72,7 @@ contract BlindAuction {
         uint256 start_price
     );
 
-    /// @dev this event to annouce auction started
-    /// @param Auction_id is the id of the auction
-    /// @param highestBidder is the address of the highest Bidder
-    /// @param highestBid is the value of the winning bid
+
     event AuctionEnded(
         uint256 Auction_id,
         address highestBidder,
@@ -243,6 +175,39 @@ contract BlindAuction {
         _;
     }
 
+    function integersToString(uint256 _i, uint256 _j)
+        internal
+        pure
+        returns (string memory)
+    {
+        uint256 j = _i;
+        uint256 len;
+
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        j = _j;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        len++;
+        bytes memory bstr = new bytes(len);
+        uint256 k = len - 1;
+
+        while (_j != 0) {
+            bstr[k--] = bytes1(uint8(48 + (_j % 10)));
+            _j /= 10;
+        }
+        bstr[k--] = bytes1(uint8(32));
+        while (_i != 0) {
+            bstr[k--] = bytes1(uint8(48 + (_i % 10)));
+            _i /= 10;
+        }
+        return string(bstr);
+    }
+
     modifier onlyBefore(uint256 _time) {
         require(block.timestamp < _time, "After time");
         // require(
@@ -311,10 +276,6 @@ contract BlindAuction {
         );
         _;
     }
-        modifier highestBid (uint256 auction_id, uint256 blindedBid) {
-        require (blindedBid < Auctions[auction_id].start_price, "Gia cua ban thap hon gia khoi diem");
-        _;
-    }
 
     //functions
 
@@ -331,16 +292,14 @@ contract BlindAuction {
     /// @dev function to list the auction of a new item
     /// @param item_name name of the item
     /// @param item_description is the description of the item
-     /// @param start_price how long the reveal will go
     /// @param bidding_time how long the bidding will go
     /// @param reveal_time how long the reveal will go
-
     function auctionItem(
         string calldata item_name,
         string calldata item_description,
-        uint256 start_price,
         uint256 bidding_time,
-        uint256 reveal_time
+        uint256 reveal_time,
+        uint256 start_price
     ) external payable {
         uint256 auction_id = current_auction_id;
         current_auction_id += 1;
@@ -348,22 +307,23 @@ contract BlindAuction {
         uint256 bidding_end = block.timestamp + bidding_time;
         uint256 reveal_end = bidding_end + reveal_time;
 
-        auctions storage n = rq[numRequests++];
-            n.auction_id;
-            payable (msg.sender);
-            n.biddingEnd;
-            n.revealEnd;
-            n.ended = false;
-            n.item_name;
-            n.item_description;
-            n.start_price;
-            n.sold = false;
-            n.highestBidder;
-            n.highestBid = 0;
-            n.revealedBidders;
-            n.winner;
-            n.winningBid;
-            n.H;
+    Auctions[auction_id] = auctions(
+            auction_id,
+            msg.sender,
+            bidding_end,
+            reveal_end,
+            false,
+            item_name,
+            item_description,
+            start_price,
+            false,
+            address(0),
+            0,
+            new address payable[](0),
+            address(0),
+            0,
+            ""
+        );
         emit AuctionStarted(auction_id, item_name, item_description, start_price);
         emit BiddingStarted(auction_id, bidding_end);
     }
@@ -481,7 +441,7 @@ contract BlindAuction {
         validAuctionId(auction_id)
     {
         uint256 refund = 0;
-        bool success = false;
+        // bool success = false;
         //get the bid placed by the user
         Bid storage bidToCheck = Auctions[auction_id].bids[msg.sender];
 
@@ -494,26 +454,32 @@ contract BlindAuction {
             // Make it impossible for the sender to re-claim
             bidToCheck.bidHash = bytes32(0);
 
-            Auctions[auction_id].revealedBidders.push(payable(msg.sender));
+            Auctions[auction_id].revealedBidders.push(msg.sender);
             Auctions[auction_id].revealed[msg.sender] = true;
             refund += bidToCheck.deposit;
             if (bidToCheck.deposit >= 2 * value) {
-                if (placeBid(auction_id, payable(msg.sender), value))
+                if (placeBid(auction_id, msg.sender, value))
                     refund -= 2 * value;
                 emit BidRevealed(auction_id, msg.sender);
             } else emit DepositNotEnough(auction_id, msg.sender);
             // the same deposit.
             emit BalanceRefunded(auction_id, msg.sender, refund);
-            payable(msg.sender).transfer(refund);
+            msg.sender.transfer(refund);
         }
     }
 
-
+    // This is an "internal" function which means that it
+    // can only be called from the contract itself (or from
+    // derived contracts).
+    ///@dev the function is used accept bids by the owner
+    ///@param auction_id is the id of the auction
+    ///@param bidder is the address of the bidder
+    ///@param value is the value of the bid
     function placeBid(
         uint256 auction_id,
         address payable bidder,
         uint256 value
-    ) internal returns (bool success) {
+    ) internal returns (bool) {
         if (value <= Auctions[auction_id].highestBid) {
             return false;
         }
@@ -529,7 +495,9 @@ contract BlindAuction {
         return true;
     }
 
-
+    ///@dev function to withdraw overbid/non-winning bids
+    ///@param auction_id is the id of the Auction
+    ///@param bidder is the address of the bidder whose payment is pending
     function withdraw(uint256 auction_id, address payable bidder)
         internal
         auctionEnded(auction_id)
@@ -544,7 +512,9 @@ contract BlindAuction {
         }
     }
 
-
+    ///@dev End the auction and send the highest bid to the beneficiary
+    ///@param auction_id is the id of the auction
+    ///@notice only beneficiary of the auction can call the function
     function auctionEnd(uint256 auction_id)
         external
         onlyAfter(Auctions[auction_id].revealEnd)
@@ -577,6 +547,9 @@ contract BlindAuction {
             ) {
                 withdraw(auction_id, Auctions[auction_id].revealedBidders[i]);
             }
+            //Auctions[auction_id].beneficiary.transfer(
+            //Auctions[auction_id].highestBid
+            // );
             emit WinnerChosen(
                 auction_id,
                 Auctions[auction_id].winner,
@@ -586,6 +559,11 @@ contract BlindAuction {
         }
     }
 
+    /// @dev Sale of item from seller's side
+    /// @dev Transaction from the seller
+    /// @param auction_id is the id of the item being sold_
+    /// @param H is the unique string for the item
+    /// @dev assume the seller is fair,will provide the right item
     function sellItem(uint256 auction_id, string calldata H)
         external
         payable
@@ -601,7 +579,12 @@ contract BlindAuction {
         Auctions[auction_id].H = H;
 
         emit encryptedKey(auction_id, H);
+        //  Auctions[auction_id].beneficiary.transfer(Auctions[auction_id].winningBid);
     }
+
+    /// @dev Confirmation of delivery
+    /// @dev Transaction from the winner
+    /// @param auction_id is the id of the item being sold_
     function confirmDelivery(uint256 auction_id)
         external
         payable
@@ -612,6 +595,7 @@ contract BlindAuction {
         /// Refund the seller
         uint256 amt = Auctions[auction_id].winningBid;
         uint256 prof = 3 * amt;
+        // emit deliveryComplete(auction_id);
         Auctions[auction_id].pendingReturns[Auctions[auction_id].winner] = 0;
         Auctions[auction_id].sold = true;
 
@@ -621,3 +605,4 @@ contract BlindAuction {
         emit deliveryComplete(auction_id);
     }
 }
+

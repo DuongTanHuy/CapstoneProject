@@ -12,6 +12,11 @@ const PostFeatureItemStyles = styled.div`
   border-radius: 16px;
   position: relative;
   height: 169px;
+  :hover img {
+    transform: scale(1.1);
+    transition: all 0.1s linear;
+  }
+  overflow: hidden;
   .post {
     &-image {
       width: 100%;

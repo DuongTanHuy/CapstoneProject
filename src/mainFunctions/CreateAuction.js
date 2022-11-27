@@ -6,7 +6,7 @@ class CreateAuctions extends Component {
     super(props)
     this.state = {
       web3: null,
-      accounts: null,
+      accounts: null,   
       currentAccount: null,
       blind_contract: null,
       formData: {

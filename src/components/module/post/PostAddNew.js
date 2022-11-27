@@ -1,5 +1,4 @@
 import { Button } from "components/button";
-// import { Radio } from "components/checkbox";
 import { Dropdown } from "components/dropdown";
 import { Field } from "components/field";
 import { Input } from "components/input";
@@ -8,12 +7,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import styled from "styled-components";
-// import { postStatus } from "untils/constants";
-
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ImageUploader from "quill-image-uploader";
-
 import ImageUpload from "components/image/ImageUpload";
 import useHandleImage from "hooks/useHandleImage";
 import Toggle from "components/toggle/Toggle";
@@ -177,14 +173,6 @@ const PostAddNew = () => {
               placeholder="Find the author"
             ></Input>
           </Field>
-          {/* <Field>
-            <Label>Slug</Label>
-            <Input
-              control={control}
-              placeholder="Enter your slug"
-              name="slug"
-            ></Input>
-          </Field> */}
           <Field>
             <Label>Category</Label>
             <Dropdown>
@@ -205,38 +193,6 @@ const PostAddNew = () => {
               </Dropdown.List>
             </Dropdown>
           </Field>
-          <Field>
-            {/* <Label>Status</Label>
-            <div className="flex items-center gap-x-5">
-              <Radio
-                name="status"
-                control={control}
-                checked={Number(watchStatus) === postStatus.APPROVED}
-                onClick={() => setValue("status", postStatus.APPROVED)}
-                value={postStatus.APPROVED}
-              >
-                Approved
-              </Radio>
-              <Radio
-                name="status"
-                control={control}
-                checked={Number(watchStatus) === postStatus.PENDING}
-                onClick={() => setValue("status", postStatus.PENDING)}
-                value={postStatus.PENDING}
-              >
-                Pending
-              </Radio>
-              <Radio
-                name="status"
-                control={control}
-                checked={Number(watchStatus) === postStatus.REJECTED}
-                onClick={() => setValue("status", postStatus.REJECTED)}
-                value={postStatus.REJECTED}
-              >
-                Reject
-              </Radio>
-            </div> */}
-          </Field>
         </div>
         <div className="grid grid-cols-2 gap-x-10 mb-3">
           <Field>
@@ -251,11 +207,6 @@ const PostAddNew = () => {
           </Field>
           <Field>
             <Label>Enter your detail</Label>
-            {/* <Input
-                control={control}
-                name="detail"
-                className="min-h-[100px]"
-              ></Input> */}
             <ReactQuill
               className="w-full min-h-[200px] entry-content"
               modules={module}
@@ -286,6 +237,7 @@ const PostAddNew = () => {
           Create your auction
         </Button>
       </form>
+      {/* <MainCreateBlock></MainCreateBlock> */}
     </PostAddNewStyles>
   );
 };
