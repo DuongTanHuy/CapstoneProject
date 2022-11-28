@@ -6,9 +6,12 @@ import { Label } from "components/label";
 import DashboardHeading from "components/module/dashboard/DashboardHeading";
 import TextAreaAutoReSize from "components/textarea/TextAreaAutoReSize";
 import { useAuth } from "contexts/auth-context";
+import { useMeta } from "contexts/metamask-context";
 import { auth, db } from "firebase-app/firebase-config";
 import { signOut } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import getWeb3 from "getWeb3";
+import BlindAuction from "../../contracts/BlindAuction.json"
 import useHandleImage from "hooks/useHandleImage";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -107,22 +110,44 @@ const UserProfile = () => {
     navigate("/");
   };
 
+  const {
+    web3,
+    initialized,
+    setInit,
+    setWeb3,
+    setAccounts,
+    setCurrentAccounts,
+    setBlindContract,
+  } = useMeta();
+
   const handleConnect = async () => {
-    // const web3 = await getWeb3();
-    // const accounts = await web3.eth.getAccounts();
-    // const networkId = await web3.eth.net.getId();
-    // const deployedNetwork2 = BlindAuction.networks[networkId];
-    // const instance2 = await new web3.eth.Contract(
-    //   BlindAuction.abi,
-    //   deployedNetwork2 && deployedNetwork2.address
-    // );
-    // instance2.options.address = deployedNetwork2?.address;
-    // setWeb3(web3);
-    // setAccounts(accounts);
-    // setBlindContract(instance2);
-    // setInit(true);
-    // setCurrentAccounts(accounts[0]);
-    // init();
+    try {
+      console.log(await getWeb3());
+      const web3 = await getWeb3();
+      console.log(web3);
+      const accounts = await web3.eth.getAccounts();
+      const networkId = await web3.eth.net.getId();
+      const deployedNetwork2 = BlindAuction.networks[networkId];
+      const instance2 = await new web3.eth.Contract(
+        BlindAuction.abi,
+        deployedNetwork2 && deployedNetwork2.address
+      );
+      instance2.options.address = deployedNetwork2.address;
+      setWeb3(web3);
+      setAccounts(accounts);
+      setBlindContract(instance2);
+      setInit(true);
+      setCurrentAccounts(accounts[0]);
+      init();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const init = async () => {
+    if (initialized === false) return;
+    const accounts = await web3.eth.getAccounts();
+    setAccounts(accounts);
   };
 
   return (

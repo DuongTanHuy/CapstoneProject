@@ -25,6 +25,7 @@ import { useAuth } from "contexts/auth-context";
 import { toast } from "react-toastify";
 import DashboardHeading from "../dashboard/DashboardHeading";
 import { useNavigate } from "react-router-dom";
+import { useMeta } from "contexts/metamask-context";
 
 const PostAddNewStyles = styled.div``;
 
@@ -33,6 +34,8 @@ Quill.register("modules/imageUploader", ImageUploader);
 const PostAddNew = () => {
   const { userInfo } = useAuth();
   const navigate = useNavigate();
+
+  const { web3, setAccounts, blindContract } = useMeta();
 
   const {
     control,
@@ -75,6 +78,38 @@ const PostAddNew = () => {
   const addPostHandler = async (values) => {
     if (!isValid) return;
     setLoading(true);
+    async function createAuction() {
+      const accounts = await web3.eth.getAccounts();
+      setAccounts(accounts);
+
+      let bidding_time = parseInt(
+        (new Date(values.start).getTime() - Date.now()) / 1000
+      );
+      let reveal_time =
+        parseInt((new Date(values.end).getTime() - Date.now()) / 1000) -
+        bidding_time;
+      if (bidding_time <= 0) {
+        alert("Invalid Bidding Deadline");
+        return false;
+      }
+      if (reveal_time <= 0) {
+        alert("Invalid Reveal Deadline");
+        return false;
+      }
+
+      await blindContract.methods
+        .auctionItem(
+          values.prName,
+          values.desc,
+          Number(values.startPrice),
+          bidding_time,
+          reveal_time
+        )
+        .send({ from: accounts[0] });
+    }
+
+    createAuction();
+
     try {
       const cloneValue = { ...values };
       cloneValue.slug = slugify(values.title, { lower: true });
@@ -175,7 +210,7 @@ const PostAddNew = () => {
           </Field>
           <Field>
             <Label>Category</Label>
-            <Dropdown>
+            <Dropdown className="z-10">
               <Dropdown.Select
                 placeholder={`${selectCategory?.name || "Choose auction type"}`}
               ></Dropdown.Select>
@@ -193,7 +228,45 @@ const PostAddNew = () => {
               </Dropdown.List>
             </Dropdown>
           </Field>
+          <div className="mt-11 flex flex-row gap-x-3">
+            <Input
+              name="prName"
+              control={control}
+              placeholder="Enter your product name"
+            ></Input>
+            <Input
+              name="desc"
+              control={control}
+              placeholder="Enter your product description"
+            ></Input>
+          </div>
+          {selectCategory?.name === "Secret Auction" && (
+            <>
+              <Field>
+                <Input
+                  name="startPrice"
+                  control={control}
+                  placeholder="Enter your start price"
+                ></Input>
+              </Field>
+              <Field>
+                <div className="flex flex-row gap-x-3">
+                  <Input
+                    name="start"
+                    type="dateTime-local"
+                    control={control}
+                  ></Input>
+                  <Input
+                    name="end"
+                    type="dateTime-local"
+                    control={control}
+                  ></Input>
+                </div>
+              </Field>
+            </>
+          )}
         </div>
+
         <div className="grid grid-cols-2 gap-x-10 mb-3">
           <Field>
             <Label>Image</Label>
