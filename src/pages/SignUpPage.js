@@ -18,13 +18,25 @@ import { userRole, userStatus } from "untils/constants";
 
 const schema = yup.object({
   fullName: yup.string().required("Please enter your full name!"),
+  userName: yup.string().required("Please enter your user name!"),
   email: yup
     .string()
     .email("Please enter valid email address!")
     .required("Please enter your email address!"),
+  identify: yup.string().required("Please enter your identify number!"),
   password: yup
     .string()
     .min(8, "Your password must be at least 8 characters!")
+    .matches(/(?=.*?[A-Z])/, "Password must contain at least one uppercase.")
+    .matches(
+      /(?=.*?[a-z])/,
+      "Password must contain at least one lowercase letter."
+    )
+    .matches(/(?=.*?[0-9])/, "Password must contain at least one number.")
+    .matches(
+      /(?=.*?[#?!@$%^&*-])/,
+      "Password must contain at least one special character."
+    )
     .required("Please enter your password!"),
 });
 
@@ -89,6 +101,8 @@ const SignUpPage = () => {
     if (arrErrors.length > 0) {
       toast.error(arrErrors[0]?.message, {
         delay: 0,
+        pauseOnHover: false,
+        // draggableDirection: "y",
       });
     }
   }, [errors]);
@@ -111,11 +125,31 @@ const SignUpPage = () => {
         </Field>
 
         <Field>
+          <Label htmlFor="email">User name</Label>
+          <Input
+            name="userName"
+            type="text"
+            placeholder="Enter your user name"
+            control={control}
+          />
+        </Field>
+
+        <Field>
           <Label htmlFor="email">Email address</Label>
           <Input
             name="email"
             type="email"
             placeholder="Enter your email address"
+            control={control}
+          />
+        </Field>
+
+        <Field>
+          <Label htmlFor="identify">Identify number</Label>
+          <Input
+            name="identify"
+            type="text"
+            placeholder="Enter your identify number"
             control={control}
           />
         </Field>
