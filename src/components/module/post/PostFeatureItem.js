@@ -1,6 +1,7 @@
 import { db } from "firebase-app/firebase-config";
 import { doc, getDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import slugify from "slugify";
 import styled from "styled-components";
 import PostCategory from "./PostCategory";
@@ -62,6 +63,7 @@ const PostFeatureItem = ({ data }) => {
     ? new Date(data?.createdAt.seconds * 1000)
     : new Date();
   const formatDate = new Date(date).toLocaleDateString("vi-VI");
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchCategory() {
@@ -91,25 +93,25 @@ const PostFeatureItem = ({ data }) => {
 
   return (
     <PostFeatureItemStyles>
-      <PostImage url={data.image}></PostImage>
-      <div className="post-overlay"></div>
-      <div className="post-content">
-        <div className="post-top">
-          {categories?.name && (
-            <PostCategory to={categories?.slug}>
-              {categories?.name}
-            </PostCategory>
-          )}
-          <PostMeta
-            date={formatDate}
-            to={slugify(data?.author || "", { lower: true })}
-            authorName={data?.author}
-          ></PostMeta>
+        <PostImage url={data.image}></PostImage>
+        <div className="post-overlay"></div>
+        <div className="post-content" onClick={()=> navigate(`${data.slug}?id=${data.id}`)}>
+          <div className="post-top">
+            {categories?.name && (
+              <PostCategory to={categories?.slug}>
+                {categories?.name}
+              </PostCategory>
+            )}
+            <PostMeta
+              date={formatDate}
+              to={slugify(data?.author || "", { lower: true })}
+              authorName={data?.author}
+            ></PostMeta>
+          </div>
+          <PostTitle to={`${data.slug}?id=${data.id}`} size="big">
+            {data.title}
+          </PostTitle>
         </div>
-        <PostTitle to={`${data.slug}?id=${data.id}`} size="big">
-          {data.title}
-        </PostTitle>
-      </div>
     </PostFeatureItemStyles>
   );
 };

@@ -1,6 +1,7 @@
 import { db } from "firebase-app/firebase-config";
 import { doc, getDoc } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import slugify from "slugify";
 import styled from "styled-components";
 import PostCategory from "./PostCategory";
@@ -56,6 +57,7 @@ const PostItem = ({ data }) => {
     ? new Date(data?.createdAt.seconds * 1000)
     : new Date();
   const formatDate = new Date(date).toLocaleDateString("vi-VI");
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchCategory() {
@@ -72,7 +74,7 @@ const PostItem = ({ data }) => {
   if (!data || !data.id) return null;
 
   return (
-    <PostItemStyles>
+    <PostItemStyles onClick={() => navigate(`${data.slug}?id=${data.id}`)}>
       <div className="w-full h-[202px] rounded-2xl overflow-hidden">
         <PostImage url={data.image}></PostImage>
       </div>

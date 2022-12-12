@@ -22,7 +22,13 @@ const menuList = [
 ];
 
 const HeaderStyles = styled.header`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999999;
   padding: 16px 0;
+  background-color: white;
   .header-main {
     display: flex;
     align-items: center;
@@ -106,12 +112,21 @@ const Header = () => {
                 {item.title === "Profile" ? (
                   <NavLink
                     to={item.url + `?id=${userInfo?.uid}`}
-                    className="menu-link"
+                    id="menu-link"
+                    className={({ isActive }) =>
+                      isActive ? "border-b-4 border-violet-600" : ""
+                    }
                   >
                     {item.title}
                   </NavLink>
                 ) : (
-                  <NavLink to={item.url} className="menu-link">
+                  <NavLink
+                    to={item.url}
+                    className={({ isActive }) =>
+                      isActive ? "border-b-4 border-violet-600" : ""
+                    }
+                    id="menu-link"
+                  >
                     {item.title}
                   </NavLink>
                 )}
@@ -233,9 +248,9 @@ const Header = () => {
               type="button"
               height="58px"
               className="header-button"
-              to="/sign-up"
+              to="/sign-in"
             >
-              Sign Up
+              Sign In
             </Button>
           ) : (
             <div className="header-auth flex flex-col items-center justify-center">

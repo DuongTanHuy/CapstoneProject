@@ -2,6 +2,7 @@ import Layout from "components/layout/Layout";
 import DashboardLayout from "components/module/dashboard/DashboardLayout";
 import PostAddNew from "components/module/post/PostAddNew";
 import PostManage from "components/module/post/PostManage";
+import OngoingPost from "components/module/post/PostManage copy";
 import PostUpdate from "components/module/post/PostUpdate";
 import UserManage from "components/user/UserManage";
 import UserProfile from "components/user/UserProfile";
@@ -42,6 +43,14 @@ function SubApp() {
               <Route
                 path="/auction/update-auction"
                 element={<ManagePostUpdate></ManagePostUpdate>}
+              ></Route>
+              <Route
+                path="/manage/ongoing"
+                element={<OngoingPost></OngoingPost>}
+              ></Route>
+              <Route
+                path="/manage/history"
+                element={<OngoingPost></OngoingPost>}
               ></Route>
               <Route
                 path="/auction/details"

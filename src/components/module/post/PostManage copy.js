@@ -1,4 +1,4 @@
-import { ActionDelete, ActionEdit, ActionView } from "components/actions";
+import { ActionView } from "components/actions";
 import { Button } from "components/button";
 import { LabelStatus } from "components/label";
 import { Table } from "components/table";
@@ -6,8 +6,6 @@ import { useAuth } from "contexts/auth-context";
 import { db } from "firebase-app/firebase-config";
 import {
   collection,
-  deleteDoc,
-  doc,
   getDocs,
   limit,
   onSnapshot,
@@ -18,14 +16,13 @@ import {
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import Swal from "sweetalert2";
 import { postStatus } from "untils/constants";
 import lodash from "lodash";
 import DashboardHeading from "../dashboard/DashboardHeading";
 
 const POSTS_PER_PAGE = 5;
 
-const PostManage = () => {
+const OngoingPost = () => {
   const { userInfo } = useAuth();
   const navigate = useNavigate();
 
@@ -80,29 +77,6 @@ const PostManage = () => {
     fetchData();
   }, [filter, userInfo.uid]);
 
-  const handleDeletePost = async (post) => {
-    const colRef = doc(db, "posts", post?.id);
-
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await deleteDoc(colRef);
-        Swal.fire("Deleted!", "Your file has been deleted.", "success");
-      }
-    });
-  };
-
-  const handleEdit = (post) => {
-    navigate(`/auction/update-auction?id=${post.id}`);
-  };
-
   const handleView = (post)=>{
     navigate(`/auction/details?id=${post.id}`)
   }
@@ -146,7 +120,7 @@ const PostManage = () => {
         <div className="w-full h-full">
           <DashboardHeading
             title="Auction manager"
-            desc="Auctions are pending approval"
+            desc="Auction is in progress"
           ></DashboardHeading>
         </div>
         <input
@@ -215,10 +189,6 @@ const PostManage = () => {
                 <td>
                   <div className="flex items-center gap-x-3">
                     <ActionView onClick={()=> handleView(post)}></ActionView>
-                    <ActionEdit onClick={() => handleEdit(post)}></ActionEdit>
-                    <ActionDelete
-                      onClick={() => handleDeletePost(post)}
-                    ></ActionDelete>
                   </div>
                 </td>
               </tr>
@@ -237,4 +207,4 @@ const PostManage = () => {
   );
 };
 
-export default PostManage;
+export default OngoingPost;

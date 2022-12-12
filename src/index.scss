@@ -4,13 +4,15 @@
 @tailwind utilities;
 @layer base {
   body {
-    @apply bg-white font-body text-black;
+    @apply font-body text-black;
   }
 }
 
 body {
   font-size: 16px;
   color: #232323;
+  // background-image: url("https://images.unsplash.com/photo-1517495306984-f84210f9daa8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2t5fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=600&q=60");
+  background-size: 100%;
 }
 
 .container {
@@ -19,7 +21,7 @@ body {
   padding: 0 20px;
 }
 
-.menu-link {
+#menu-link {
   font-size: 18px;
   font-weight: 600;
   padding-bottom: 6px;

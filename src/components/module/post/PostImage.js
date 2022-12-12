@@ -20,7 +20,7 @@ const PostImage = ({
 }) => {
   if (to)
     return (
-      <NavLink to={to} style={{ display: "block" }}>
+      <NavLink to={to}>
         <PostImageStyles className={`post-image ${className}`}>
           <img id={id} src={url} alt={alt} loading="lazy" />
         </PostImageStyles>
