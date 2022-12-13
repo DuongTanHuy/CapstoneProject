@@ -11,7 +11,7 @@ import { auth, db } from "firebase-app/firebase-config";
 import { signOut } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import getWeb3 from "getWeb3";
-import BlindAuction from "../../contracts/BlindAuction.json"
+import BlindAuction from "../../contracts/BlindAuction.json";
 import useHandleImage from "hooks/useHandleImage";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -122,17 +122,16 @@ const UserProfile = () => {
 
   const handleConnect = async () => {
     try {
-      console.log(await getWeb3());
       const web3 = await getWeb3();
-      console.log(web3);
       const accounts = await web3.eth.getAccounts();
       const networkId = await web3.eth.net.getId();
       const deployedNetwork2 = BlindAuction.networks[networkId];
       const instance2 = await new web3.eth.Contract(
         BlindAuction.abi,
-        deployedNetwork2 && deployedNetwork2.address
+        deployedNetwork2 && deployedNetwork2?.address
       );
-      instance2.options.address = deployedNetwork2.address;
+      instance2.options.address = deployedNetwork2?.address;
+      console.log(accounts)
       setWeb3(web3);
       setAccounts(accounts);
       setBlindContract(instance2);
@@ -152,120 +151,116 @@ const UserProfile = () => {
 
   return (
     <div>
-      <DashboardHeading
-        title="Account information"
-        desc="Update your account information"
-      ></DashboardHeading>
-      <form onSubmit={handleSubmit(handleUpdate)}>
-        <div className="text-center mb-10">
-          <div className="flex flex-row items-center justify-end">
-            <div className="flex flex-row gap-x-3 mr-3">
-              <Button onClick={handleConnect}>Connect MetaMask</Button>
-              <Button
-                isLoading={isSubmitting}
-                disabled={isSubmitting}
-                kind="primary"
-                type="submit"
-                className="mr-auto w-[200px]"
-              >
-                Update
-              </Button>
-            </div>
+      <div>
+        <DashboardHeading
+          title="Account information"
+          desc="Update your account information"
+        ></DashboardHeading>
+        <div className="text-center ml-auto">
+          <div className="flex flex-row gap-x-6 items-center justify-end mb-10">
+            <Button onClick={handleConnect}>Connect MetaMask</Button>
             <Button onClick={handleSignOut}>SignOut</Button>
           </div>
-          <ImageUpload
-            onChange={handleSelectImage}
-            handleDeleteImg={handleDeleteImg}
-            progress={progress}
-            image={image}
-            className="w-[200px] h-[200px] !rounded-full min-h-0 mx-auto"
-          ></ImageUpload>
         </div>
-        <div className="form-layout">
-          <Field>
-            <Label>Full name</Label>
-            <Input
-              control={control}
-              name="fullName"
-              placeholder="Enter your fullname"
-            ></Input>
-          </Field>
-          <Field>
-            <Label>User name</Label>
+      </div>
+      <form onSubmit={handleSubmit(handleUpdate)}>
+        <div id="main">
+          <div className="sideBar flex flex-col justify-center items-center gap-y-5 mb-5 p-9 w-[400px] bg-white shadow-2xl rounded-xl">
+            <p className="text-2xl font-semibold ">Your Account</p>
+            <hr className="w-full bg-gray-300" />
+            <ImageUpload
+              onChange={handleSelectImage}
+              handleDeleteImg={handleDeleteImg}
+              progress={progress}
+              image={image}
+              className="w-[100px] h-[100px] !rounded-full min-h-0 mx-auto"
+            ></ImageUpload>
+            <Label className="mr-auto">User name</Label>
             <Input
               control={control}
               name="userName"
               placeholder="Enter your username"
             ></Input>
-          </Field>
-        </div>
-        <div className="form-layout">
-          <Field>
-            <Label>Date of Birth</Label>
-            <Input
-              control={control}
-              name="birth"
-              placeholder="dd/mm/yyyy"
-            ></Input>
-          </Field>
-          <Field>
-            <Label>Identify card</Label>
-            <Input
-              control={control}
-              name="identify"
-              placeholder="Enter your identify card"
-            ></Input>
-          </Field>
-        </div>
-        <div className="form-layout">
-          <Field>
-            <Label>Mobile Number</Label>
-            <Input
-              control={control}
-              name="phone"
-              placeholder="Enter your phone number"
-            ></Input>
-          </Field>
-          <Field>
-            <Label>Email</Label>
+            <Label className="mr-auto">Email</Label>
             <Input
               control={control}
               name="email"
               type="email"
               placeholder="Enter your email address"
             ></Input>
-          </Field>
-          <Field></Field>
-        </div>
-        <div className="form-layout">
-          <Field>
-            <Label>New Password</Label>
+            <Label className="mr-auto">Password</Label>
             <Input
               control={control}
               name="password"
               type="password"
               placeholder="Enter your password"
             ></Input>
-          </Field>
-          <Field>
-            <Label>Confirm Password</Label>
-            <Input
-              control={control}
-              name="confirmPassword"
-              type="password"
-              placeholder="Enter your confirm password"
-            ></Input>
-          </Field>
-        </div>
-        <div className="mx-32 mb-10">
-          <Field>
-            <Label>About you</Label>
-            <TextAreaAutoReSize
-              control={control}
-              name="description"
-              placeholder="About you"
-            ></TextAreaAutoReSize>
-          </Field>
+            <Button kind="secondary" className="hover:opacity-60 shadow-xl">
+              Change password
+            </Button>
+          </div>
+          <div className="children bg-white shadow-2xl rounded-lg p-9">
+            <div className="flex flex-row items-center justify-center mb-5">
+              <p className="text-2xl font-semibold">Update your profile</p>
+              <Button
+                isLoading={isSubmitting}
+                disabled={isSubmitting}
+                kind="secondary"
+                type="submit"
+                className="ml-auto w-[160px] max-h-[32px] shadow-xl hover:opacity-60"
+              >
+                Update
+              </Button>
+            </div>
+            <hr className="w-full bg-gray-300 mb-5" />
+            <div className="form-layout">
+              <Field>
+                <Label>Full name</Label>
+                <Input
+                  control={control}
+                  name="fullName"
+                  placeholder="Enter your full name"
+                ></Input>
+              </Field>
+              <Field>
+                <Label>Identify card</Label>
+                <Input
+                  control={control}
+                  name="identify"
+                  placeholder="Enter your identify card"
+                ></Input>
+              </Field>
+            </div>
+            <div className="form-layout">
+              <Field>
+                <Label>Date of Birth</Label>
+                <Input
+                  control={control}
+                  name="birth"
+                  placeholder="dd/mm/yyyy"
+                ></Input>
+              </Field>
+              <Field>
+                <Label>Mobile Number</Label>
+                <Input
+                  control={control}
+                  name="phone"
+                  placeholder="Enter your phone number"
+                ></Input>
+              </Field>
+            </div>
+            <div className="mx-10 mb-10">
+              <Field>
+                <Label>About me</Label>
+                <TextAreaAutoReSize
+                  className="min-h-[110px]"
+                  control={control}
+                  name="description"
+                  placeholder="About you"
+                ></TextAreaAutoReSize>
+              </Field>
+            </div>
+          </div>
         </div>
       </form>
     </div>

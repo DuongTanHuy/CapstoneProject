@@ -110,13 +110,15 @@ const ManagePostUpdate = () => {
       content: `Your bid ${values.title} has been `,
       status: Number(values.status),
       userId: values.userId,
+      postId,
+      slug: values.slug,
       createdAt: serverTimestamp(),
     });
   };
 
   const handleUpdate = (values) => {
     if (!isValid) return;
-    console.log(values);
+    // console.log(postId);
 
     const colRef = doc(db, "posts", postId);
     Swal.fire({

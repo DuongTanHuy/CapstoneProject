@@ -3,7 +3,7 @@ import { useAuth } from "contexts/auth-context";
 import { db } from "firebase-app/firebase-config";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const menuList = [
@@ -81,6 +81,8 @@ const Header = () => {
     : new Date();
   const formatDate = new Date(date).toLocaleDateString("vi-VI");
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const colRef = collection(db, "notify");
     const queries = query(
@@ -133,98 +135,110 @@ const Header = () => {
               </li>
             ))}
           </ul>
-          <div className="ml-auto z-10 cursor-pointer">
-            <li className="list-none flex items-center justify-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-6 h-6"
-                onClick={() => setHit(!hit)}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
-                />
-              </svg>
+          {userInfo && (
+            <div
+              className="ml-auto z-10 cursor-pointer"
+              onMouseEnter={() => setHit(!hit)}
+              onMouseLeave={() => setHit(!hit)}
+            >
+              <li className="list-none flex items-center justify-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
+                  />
+                </svg>
 
-              <div
-                className={`transition-all shadow-2xl rounded-lg max-w-[400px] bg-white ${
-                  hit ? "absolute top-14" : "hidden"
-                }`}
-              >
-                <ul>
-                  <li className="text-xl p-3 rounded-lg rounded-b-none font-semibold bg-gray-200">
-                    <h6 className="f-18 mb-0">Notifications</h6>
-                  </li>
-                  {notify.length > 0 &&
-                    notify.map((item) => (
-                      <li
-                        key={item.id}
-                        className="p-3 hover:bg-gray-100 rounded-lg rounded-t-none"
-                      >
-                        {item.status === 1 ? (
-                          <p className=" text-gray-500">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth="1.5"
-                              stroke="currentColor"
-                              className="w-6 h-6 inline-block text-green-500"
+                <div
+                  className={`transition-all shadow-2xl rounded-lg max-w-[400px] bg-white ${
+                    hit ? "absolute top-14" : "hidden"
+                  }`}
+                >
+                  <ul>
+                    <li className="text-xl p-3 rounded-lg rounded-b-none font-semibold bg-gray-200">
+                      <h6 className="f-18 mb-0">Notifications</h6>
+                    </li>
+                    {notify.length > 0 &&
+                      notify.map((item) => (
+                        <li
+                          key={item.id}
+                          className="p-3 hover:bg-gray-100 rounded-lg rounded-t-none"
+                        >
+                          {item.status === 1 ? (
+                            <p
+                              className="text-gray-500"
+                              onClick={() =>
+                                navigate(`${item?.slug}?id=${item?.postId}`)
+                              }
                             >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M4.5 12.75l6 6 9-13.5"
-                              />
-                            </svg>
-                            <span>
-                              {item.content}
-                              <span className="text-green-500">accepted</span>
-                            </span>
-                            <span className="text-gray-300">
-                              {" "}
-                              {formatDate}{" "}
-                            </span>
-                          </p>
-                        ) : (
-                          <p className=" text-gray-500">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth="1.5"
-                              stroke="currentColor"
-                              className="w-6 h-6 inline-block text-red-500"
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth="1.5"
+                                stroke="currentColor"
+                                className="w-6 h-6 inline-block text-green-500"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M4.5 12.75l6 6 9-13.5"
+                                />
+                              </svg>
+                              <span>
+                                {` ${item.content}   `}
+                                <span className="text-green-500">accepted</span>
+                              </span>
+                              <span className="text-gray-300">
+                                {`  ${formatDate}`}
+                              </span>
+                            </p>
+                          ) : (
+                            <p
+                              className=" text-gray-500"
+                              onClick={() =>
+                                navigate(`${item?.slug}?id=${item?.postId}`)
+                              }
                             >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M6 18L18 6M6 6l12 12"
-                              />
-                            </svg>
-                            <span>
-                              {" "}
-                              {item.content}{" "}
-                              <span className="text-red-500">rejected</span>
-                            </span>
-                            <span className="text-gray-300">
-                              {" "}
-                              {formatDate}{" "}
-                            </span>
-                          </p>
-                        )}
-                      </li>
-                    ))}
-                </ul>
-              </div>
-            </li>
-          </div>
-          <div className="search">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth="1.5"
+                                stroke="currentColor"
+                                className="w-6 h-6 inline-block text-red-500"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                              <span>
+                                {` ${item.content}   `}
+                                <span className="text-red-500">rejected</span>
+                              </span>
+                              <span className="text-gray-300">
+                                {`  ${formatDate}`}
+                              </span>
+                            </p>
+                          )}
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+              </li>
+            </div>
+          )}
+          <div className={`search ${!userInfo ? "!ml-auto" : ""}`}>
             <input type="text" className="search-input" placeholder="Search" />
             <span className="search-icon">
               <svg

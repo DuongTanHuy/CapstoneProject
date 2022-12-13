@@ -9,7 +9,7 @@ const SidebarStyles = styled.div`
   box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
     rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
   border-radius: 12px;
-  .sidebar-logo {
+  /* .sidebar-logo {
     display: flex;
     align-items: center;
     font-weight: 600;
@@ -19,7 +19,7 @@ const SidebarStyles = styled.div`
     }
     margin-bottom: 20px;
     padding: 20px 20px 0;
-  }
+  } */
   .menu-item {
     display: flex;
     align-items: center;
