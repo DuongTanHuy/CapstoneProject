@@ -33,6 +33,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.39.3",
     "react-paginate": "^8.1.4",
+    "react-portal": "^4.2.2",
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.4.3",
     "react-scripts": "5.0.1",

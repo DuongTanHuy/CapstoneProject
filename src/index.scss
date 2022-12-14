@@ -95,3 +95,39 @@ input:-webkit-autofill:active {
   gap: 0 130px;
   align-items: start;
 }
+
+.content {
+  transition: all 0.3s ease;
+}
+
+.zoom-enter .content {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.zoom-enter-active .content {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.zoom-exit .content {
+  opacity: 1;
+}
+
+.zoom-exit-active .content {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.swal2-container.swal2-center.swal2-backdrop-show {
+  z-index: 99999999999999;
+}
+
+.Toastify {
+  position: relative;
+  z-index: 999999999 !important;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #8334cc !important;
+}
