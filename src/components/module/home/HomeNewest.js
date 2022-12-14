@@ -104,7 +104,6 @@ const HomeNewest = () => {
             id="scroll2"
             className="grid-layout grid-layout--primary scroll-smooth"
             grabCursor={"true"}
-            scrollbar={{ draggable: true }}
             spaceBetween={46}
             slidesPerView={"auto"}
           >

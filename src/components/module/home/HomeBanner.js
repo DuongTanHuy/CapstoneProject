@@ -92,7 +92,7 @@ const HomeBanner = () => {
                     animi itaque in? Unde impedit mollitia velit labore!
                     Consequatur esse nemo consectetur architecto.
                   </p>
-                  <Button to="/sign-up" kind="secondary">
+                  <Button to={`${post.slug}?id=${post.id}`} kind="secondary">
                     Participate
                   </Button>
                 </div>

@@ -82,7 +82,6 @@ const HomeFeature = () => {
           className="grid-layout scroll-smooth"
           grabCursor={"true"}
           spaceBetween={46}
-          scrollbar={{ draggable: true }}
           slidesPerView={"auto"}
         >
           {posts.map((post) => (
