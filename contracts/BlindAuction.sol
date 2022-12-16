@@ -209,7 +209,7 @@ contract BlindAuction {
     }
 
     modifier onlyBefore(uint256 _time) {
-        require(block.timestamp < _time, "After time");
+        require(block.timestamp > _time, "After time");
         // require(
         //     block.timestamp < _time,
         //     integersToString(block.timestamp, _time)

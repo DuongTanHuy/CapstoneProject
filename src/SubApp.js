@@ -6,6 +6,7 @@ import OngoingPost from "components/module/post/PostManage copy";
 import PostUpdate from "components/module/post/PostUpdate";
 import UserManage from "components/user/UserManage";
 import UserProfile from "components/user/UserProfile";
+// import { useMeta } from "contexts/metamask-context";
 import CreateAuctions from "mainFunctions/CreateAuction";
 import AuctionPage from "pages/AuctionPage";
 import DashboardPage from "pages/DashboardPage";
@@ -22,6 +23,16 @@ import SignUpPage from "./pages/SignUpPage";
 function SubApp() {
   const userInfo = useAuth();
   const authenticatedUser = userInfo?.userInfo?.email === "admin@gmail.com";
+  // const { blindContract, currentAccount } = useMeta();
+  // const getData = async () => {
+  //   const data = await blindContract?.methods
+  //     ?.getallauctions()
+  //     ?.call({ from: currentAccount });
+
+  //   console.log(data);
+  // };
+
+  // getData();
 
   return (
     <>

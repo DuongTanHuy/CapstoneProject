@@ -22,22 +22,23 @@ import ModalAdvanced from "components/modal/ModalAdvanced";
 import InputPassToggle from "components/input/InputPassToggle";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import Market from "../../contracts/Market.json";
 
 const schema = yup.object({
-  newPass: yup
-    .string()
-    .min(8, "Your password must be at least 8 characters!")
-    .matches(/(?=.*?[A-Z])/, "Password must contain at least one uppercase.")
-    .matches(
-      /(?=.*?[a-z])/,
-      "Password must contain at least one lowercase letter."
-    )
-    .matches(/(?=.*?[0-9])/, "Password must contain at least one number.")
-    .matches(
-      /(?=.*?[#?!@$%^&*-])/,
-      "Password must contain at least one special character."
-    )
-    .required("Please enter your password!"),
+  // newPass: yup
+  //   .string()
+  //   .min(8, "Your password must be at least 8 characters!")
+  //   .matches(/(?=.*?[A-Z])/, "Password must contain at least one uppercase.")
+  //   .matches(
+  //     /(?=.*?[a-z])/,
+  //     "Password must contain at least one lowercase letter."
+  //   )
+  //   .matches(/(?=.*?[0-9])/, "Password must contain at least one number.")
+  //   .matches(
+  //     /(?=.*?[#?!@$%^&*-])/,
+  //     "Password must contain at least one special character."
+  //   )
+  //   .required("Please enter your password!"),
 });
 
 const UserProfile = () => {
@@ -149,6 +150,7 @@ const UserProfile = () => {
     initialized,
     setInit,
     setWeb3,
+    setMarket,
     setAccounts,
     setCurrentAccounts,
     setBlindContract,
@@ -165,10 +167,18 @@ const UserProfile = () => {
         deployedNetwork2 && deployedNetwork2?.address
       );
       instance2.options.address = deployedNetwork2?.address;
-      console.log(accounts);
+
+      const deployedNetwork4 = Market.networks[networkId];
+      const instance4 = await new web3.eth.Contract(
+        Market.abi,
+        deployedNetwork4 && deployedNetwork4.address
+      );
+      instance4.options.address = deployedNetwork4.address;
+
       setWeb3(web3);
       setAccounts(accounts);
       setBlindContract(instance2);
+      setMarket(instance4);
       setInit(true);
       setCurrentAccounts(accounts[0]);
       init();
@@ -181,6 +191,7 @@ const UserProfile = () => {
     if (initialized === false) return;
     const accounts = await web3.eth.getAccounts();
     setAccounts(accounts);
+    toast.success("Successful connection!");
   };
 
   const handleChangePass = (values) => {
@@ -284,7 +295,7 @@ const UserProfile = () => {
         <form onSubmit={handleSubmit(handleUpdate)}>
           <div id="main">
             <div className="sideBar flex flex-col justify-center items-center gap-y-5 mb-5 p-9 w-[400px] bg-white shadow-2xl rounded-xl">
-              <p className="text-2xl font-semibold ">Your Account</p>
+              <p className="text-2xl font-semibold ">My Account</p>
               <hr className="w-full bg-gray-300" />
               <ImageUpload
                 onChange={handleSelectImage}
@@ -309,8 +320,8 @@ const UserProfile = () => {
               <Label className="mr-auto">Password</Label>
               <InputPassToggle control={control}></InputPassToggle>
               <Button
-                kind="secondary"
-                className="hover:opacity-60 shadow-xl"
+                kind="primary"
+                className="hover:opacity-60 shadow-xl mt-6"
                 onClick={() => setOpenModal(true)}
               >
                 Change password
@@ -318,8 +329,8 @@ const UserProfile = () => {
             </div>
             <div className="children bg-white shadow-2xl rounded-lg p-9">
               <div className="flex flex-row items-center justify-center mb-5">
-                <p className="text-2xl font-semibold">Update your profile</p>
-                <Button
+                <p className="text-center text-2xl font-semibold">My Profile</p>
+                {/* <Button
                   isLoading={isSubmitting}
                   disabled={isSubmitting}
                   kind="secondary"
@@ -327,7 +338,7 @@ const UserProfile = () => {
                   className="ml-auto w-[160px] max-h-[32px] shadow-xl hover:opacity-60"
                 >
                   Update
-                </Button>
+                </Button> */}
               </div>
               <hr className="w-full bg-gray-300 mb-5" />
               <div className="form-layout">
@@ -358,7 +369,7 @@ const UserProfile = () => {
                   ></Input>
                 </Field>
                 <Field>
-                  <Label>Mobile Number</Label>
+                  <Label>Phone Numbers</Label>
                   <Input
                     control={control}
                     name="phone"
@@ -377,6 +388,15 @@ const UserProfile = () => {
                   ></TextAreaAutoReSize>
                 </Field>
               </div>
+              <Button
+                isLoading={isSubmitting}
+                disabled={isSubmitting}
+                kind="primary"
+                type="submit"
+                className="mx-auto w-[200px] max-h-[60px] shadow-xl hover:opacity-60"
+              >
+                Update My Profile
+              </Button>
             </div>
           </div>
         </form>

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 const DashboardHeaderStyles = styled.div`
   background-color: white;
-  width: 100%;
+  width: 100% !important;
   padding: 16px 40px;
   /* border-bottom: 1px solid #eee; */
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,

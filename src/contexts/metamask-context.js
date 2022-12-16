@@ -5,6 +5,7 @@ const MetaContext = createContext();
 function MetaProvider(props) {
   const [initialized, setInit] = useState(false);
   const [web3, setWeb3] = useState(null);
+  const [market, setMarket] = useState(null);
   const [accounts, setAccounts] = useState(null);
   const [currentAccount, setCurrentAccounts] = useState(null);
   const [blindContract, setBlindContract] = useState(null);
@@ -14,6 +15,8 @@ function MetaProvider(props) {
     setInit,
     web3,
     setWeb3,
+    market,
+    setMarket,
     currentAccount,
     setCurrentAccounts,
     blindContract,

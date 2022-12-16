@@ -14,6 +14,7 @@ import ModalAdvanced from "components/modal/ModalAdvanced";
 import { useForm } from "react-hook-form";
 import { Label } from "components/label";
 import { Input } from "components/input";
+import { useMeta } from "contexts/metamask-context";
 
 const PostDetailsPageStyles = styled.div`
   padding-bottom: 100px;
@@ -111,6 +112,8 @@ const PostDetailsPage = () => {
   const [user, setUser] = useState([]);
   const [openModal, setOpenModal] = useState(false);
 
+  // console.log(postDetail);
+
   const {
     control,
     handleSubmit,
@@ -163,8 +166,34 @@ const PostDetailsPage = () => {
     fetchData();
   }, [postDetail?.userId]);
 
-  const handleMakeBid = (values) => {
-    if(!isValid) return;
+  const { blindContract, web3, currentAccount } = useMeta();
+
+  const handleMakeBid = async (values) => {
+    if (!isValid) return;
+    const cloneValues = { ...values };
+    cloneValues.valueA = Number(cloneValues.valueA);
+    cloneValues.depositAmount = Number(cloneValues.depositAmount);
+    try {
+      await blindContract.methods
+        .bid(
+          web3.utils.keccak256(
+            web3.eth.abi.encodeParameters(
+              ["uint256", "string"],
+              [cloneValues.valueA, cloneValues.secretKey]
+            )
+          ),
+          parseInt(postDetail.auctionID),
+          cloneValues.publicKey
+        )
+        .send({
+          from: currentAccount,
+          value: cloneValues.depositAmount,
+        });
+      window.location.reload(false);
+    } catch (error) {
+      console.log(error);
+      alert(`Error: ${error.message}`);
+    }
   };
 
   return (
@@ -193,7 +222,7 @@ const PostDetailsPage = () => {
             </svg>
           </div>
           <p className="mb-6 text-4xl font-semibold text-center text-black">
-            Make Bid
+            Bid Placed
           </p>
           <hr className="bg-gray-200" />
           <div className="flex flex-col gap-y-3">
@@ -209,10 +238,10 @@ const PostDetailsPage = () => {
               name="publicKey"
               placeholder="Confirm your public key"
             ></Input>
-            <Label className="mt-6">Bid Amount</Label>
+            <Label className="mt-6">Value Amount</Label>
             <Input
               control={control}
-              name="bidAmount"
+              name="valueA"
               placeholder="Enter your bid amount (>2*Bid Amount)"
             ></Input>
             <Label className="mt-6">Deposit Amount</Label>
@@ -245,7 +274,7 @@ const PostDetailsPage = () => {
               onClick={() => setOpenModal(true)}
               type="button"
               kind="secondary"
-              className="shadow-2xl"
+              className="shadow-2xl border border-violet-600 hover:opacity-80"
             >
               Participate
             </Button>

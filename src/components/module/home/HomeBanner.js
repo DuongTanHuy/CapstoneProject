@@ -79,13 +79,13 @@ const HomeBanner = () => {
           <HomeBannerStyles>
             <img
               className="w-full h-hull max-h-[390px] object-cover rounded-lg shadow-lg"
-              src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1598&q=80"
+              src={post.image}
               alt=""
             />
             <div className="container">
               <div className="banner">
                 <div className="banner-content">
-                  <h1 className="banner-heading">Coming to an end</h1>
+                  <h1 className="banner-heading">{post.title}</h1>
                   <p className="banner-desc">
                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum
                     odit amet sed dolore accusamus sapiente aliquid placeat

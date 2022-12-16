@@ -45,11 +45,11 @@ const HomeNewest = () => {
   }, []);
 
   const handleScrollRight = () => {
-    const scroll = document.querySelector("#scroll2");
+    const scroll = document.querySelector("#my_scroll2");
     scroll.scrollLeft = scroll.scrollLeft + 384;
   };
   const handleScrollLeft = () => {
-    const scroll = document.querySelector("#scroll2");
+    const scroll = document.querySelector("#my_scroll2");
     scroll.scrollLeft = scroll.scrollLeft - 384;
   };
 
@@ -101,7 +101,7 @@ const HomeNewest = () => {
             />
           </svg>
           <Swiper
-            id="scroll2"
+            id="my_scroll2"
             className="grid-layout grid-layout--primary scroll-smooth"
             grabCursor={"true"}
             spaceBetween={46}

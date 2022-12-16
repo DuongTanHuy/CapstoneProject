@@ -6,7 +6,7 @@ import styled from "styled-components";
 import DashboardHeader from "./DashboardHeader";
 import Sidebar from "./Sidebar";
 const DashboardStyles = styled.div`
-  max-width: 1600px;
+  /* max-width: 1600px; */
   margin: 0 auto;
   .dashboard {
     &-heading {

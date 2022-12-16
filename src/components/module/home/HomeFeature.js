@@ -32,11 +32,11 @@ const HomeFeature = () => {
   }, []);
 
   const handleScrollRight = () => {
-    const scroll = document.querySelector("#scroll");
+    const scroll = document.querySelector("#my_scroll");
     scroll.scrollLeft = scroll.scrollLeft + 513;
   };
   const handleScrollLeft = () => {
-    const scroll = document.querySelector("#scroll");
+    const scroll = document.querySelector("#my_scroll");
     scroll.scrollLeft = scroll.scrollLeft - 513;
   };
 
@@ -78,7 +78,7 @@ const HomeFeature = () => {
           />
         </svg>
         <Swiper
-          id="scroll"
+          id="my_scroll"
           className="grid-layout scroll-smooth"
           grabCursor={"true"}
           spaceBetween={46}

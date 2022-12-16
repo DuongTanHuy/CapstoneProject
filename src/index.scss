@@ -79,7 +79,7 @@ text-primary {
   white-space: nowrap;
 }
 .form-layout {
-  @apply grid grid-cols-1 lg:grid-cols-2 lg:gap-x-32 lg:mb-10 mx-10;
+  @apply grid grid-cols-1 lg:grid-cols-2 lg:gap-x-32 lg:mb-6 mx-10;
 }
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
