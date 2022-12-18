@@ -1,8 +1,10 @@
 import { Button } from "components/button";
+import { Input } from "components/input";
 import { useAuth } from "contexts/auth-context";
 import { db } from "firebase-app/firebase-config";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { NavLink, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
@@ -44,10 +46,7 @@ const HeaderStyles = styled.header`
     margin-left: 40px;
   }
   .search {
-    margin-left: 20px;
-    padding: 16px 26px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    padding: 0px 26px;
     width: 100%;
     max-width: 320px;
     display: flex;
@@ -76,10 +75,25 @@ const Header = () => {
   const { userInfo } = useAuth();
   const [hit, setHit] = useState(false);
   const [notify, setNotify] = useState([]);
+  const [posts, setPosts] = useState([]);
+  const [filter, setFilter] = useState("");
+  const [loading, setLoading] = useState(false);
   const date = notify?.createdAt?.seconds
     ? new Date(notify?.createdAt?.seconds * 1000)
     : new Date();
   const formatDate = new Date(date).toLocaleDateString("vi-VI");
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isValid },
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      search: "",
+    },
+  });
 
   const navigate = useNavigate();
 
@@ -100,6 +114,36 @@ const Header = () => {
       setNotify(result);
     });
   }, [userInfo?.uid]);
+
+  const handleSearch = (value) => {
+    if (!isValid) return;
+    setFilter(value.search);
+  };
+
+  useEffect(() => {
+    if (filter) {
+      setLoading(true);
+      setTimeout(() => {
+        const colRef = collection(db, "posts");
+        const queries = query(
+          colRef,
+          where("title", ">=", filter),
+          where("title", "<=", filter + "utf8")
+        );
+        onSnapshot(queries, (snapshot) => {
+          let result = [];
+          snapshot.forEach((doc) => {
+            result.push({
+              id: doc.id,
+              ...doc.data(),
+            });
+          });
+          setPosts(result);
+          setLoading(false);
+        });
+      }, 1000);
+    }
+  }, [filter]);
 
   return (
     <HeaderStyles>
@@ -137,9 +181,8 @@ const Header = () => {
           </ul>
           {userInfo && (
             <div
-              className="ml-auto z-10 cursor-pointer"
-              onMouseEnter={() => setHit(!hit)}
-              onMouseLeave={() => setHit(!hit)}
+              className="ml-auto mr-[360px] z-10 cursor-pointer"
+              onMouseEnter={() => setHit(true)}
             >
               <li className="list-none flex items-center justify-center">
                 <svg
@@ -158,6 +201,7 @@ const Header = () => {
                 </svg>
 
                 <div
+                  onMouseLeave={() => setHit(false)}
                   className={`transition-all shadow-2xl rounded-lg max-w-[400px] bg-white ${
                     hit ? "absolute top-14" : "hidden"
                   }`}
@@ -238,8 +282,35 @@ const Header = () => {
               </li>
             </div>
           )}
-          <div className={`search ${!userInfo ? "!ml-auto" : ""}`}>
-            <input type="text" className="search-input" placeholder="Search" />
+
+          {!userInfo ? (
+            <Button
+              type="button"
+              height="58px"
+              className="header-button absolute right-[100px] top-[12px]"
+              to="/sign-in"
+            >
+              Sign In
+            </Button>
+          ) : (
+            <div className="header-auth flex flex-col items-center justify-center">
+              <span>Welcome back! </span>
+              <strong className="text-primary">{userInfo?.displayName}</strong>
+            </div>
+          )}
+        </div>
+        <div className="absolute top-[12px] right-[220px]">
+          <form
+            onSubmit={handleSubmit(handleSearch)}
+            className={`search ${!userInfo ? "!ml-auto" : ""}`}
+          >
+            {/* <input type="text" className="search-input" placeholder="Search" /> */}
+            <Input
+              className="min-w-[290px]"
+              name="search"
+              control={control}
+              placeholder="Search"
+            ></Input>
             <span className="search-icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -256,22 +327,45 @@ const Header = () => {
                 />
               </svg>
             </span>
+          </form>
+          <div className="bg-white rounded-lg shadow-lg absolute left-[23px] min-w-[374px] flex flex-col gap-y-1 p-1">
+            {loading && (
+              <div className="mx-auto my-3 loading w-8 h-8 rounded-full border-primary border-4 border-r-4 border-r-transparent animate-spin"></div>
+            )}
+            {!loading &&
+              posts.length > 0 &&
+              posts.map((post) => (
+                <div
+                  onClick={() => {
+                    navigate(`${post.slug}?id=${post.id}`);
+                    setPosts([]);
+                    reset();
+                  }}
+                  key={post.id}
+                  className="flex flex-row gap-x-3 justify-start items-center cursor-pointer hover:opacity-60"
+                >
+                  <div>
+                    <div className="flex items-center gap-x-3">
+                      <img
+                        src={post.image}
+                        alt=""
+                        className="w-[66px] h-[55px] rounded object-cover"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-semibold">{post.title}</h3>
+                        <time className="text-sm text-gray-500">
+                          <span>Date: </span>
+                          {new Date(
+                            post.createdAt.seconds * 1000
+                          ).toLocaleDateString("vi-VI")}
+                        </time>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="min-w-[100px]">{post.author}</div>
+                </div>
+              ))}
           </div>
-          {!userInfo ? (
-            <Button
-              type="button"
-              height="58px"
-              className="header-button"
-              to="/sign-in"
-            >
-              Sign In
-            </Button>
-          ) : (
-            <div className="header-auth flex flex-col items-center justify-center">
-              <span>Welcome back! </span>
-              <strong className="text-primary">{userInfo?.displayName}</strong>
-            </div>
-          )}
         </div>
       </div>
     </HeaderStyles>
