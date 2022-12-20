@@ -131,3 +131,12 @@ input:-webkit-autofill:active {
 .swiper-pagination-bullet-active {
   background-color: #8334cc !important;
 }
+
+#startPrice {
+  font-size: 22px;
+  font-weight: 900;
+  background: linear-gradient(to right bottom, #8334cc, #6ca5d9);
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}

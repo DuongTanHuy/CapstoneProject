@@ -2,9 +2,8 @@ import Heading from "components/layout/Heading";
 import PostCategory from "components/module/post/PostCategory";
 import PostImage from "components/module/post/PostImage";
 import PostItem from "components/module/post/PostItem";
-import PostMeta from "components/module/post/PostMeta";
 import { db } from "firebase-app/firebase-config";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, onSnapshot, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
@@ -15,9 +14,10 @@ import { useForm } from "react-hook-form";
 import { Label } from "components/label";
 import { Input } from "components/input";
 import { useMeta } from "contexts/metamask-context";
-
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/scss";
 const PostDetailsPageStyles = styled.div`
-  padding-bottom: 100px;
+  /* padding-bottom: 100px; */
   .post {
     &-header {
       display: flex;
@@ -107,10 +107,37 @@ const PostDetailsPage = () => {
   const [params] = useSearchParams();
   const detailId = params.get("id");
 
+  const [posts, setPosts] = useState([]);
   const [postDetail, setPostDetail] = useState([]);
   const [category, setCategory] = useState([]);
   const [user, setUser] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+
+  useEffect(() => {
+    const colRef = collection(db, "posts");
+    const queries = query(
+      colRef // set status (pending, apply...) tai day where("status","==", 1)
+    );
+    onSnapshot(queries, (snapshot) => {
+      let result = [];
+      snapshot.forEach((doc) => {
+        result.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      setPosts(result);
+    });
+  }, []);
+
+  const handleScrollRight = () => {
+    const scroll = document.querySelector("#my_scroll2");
+    scroll.scrollLeft = scroll.scrollLeft + 384;
+  };
+  const handleScrollLeft = () => {
+    const scroll = document.querySelector("#my_scroll2");
+    scroll.scrollLeft = scroll.scrollLeft - 384;
+  };
 
   // console.log(postDetail);
 
@@ -123,10 +150,10 @@ const PostDetailsPage = () => {
     defaultValues: {},
   });
 
-  const date = postDetail?.createdAt?.seconds
-    ? new Date(postDetail?.createdAt?.seconds * 1000)
-    : new Date();
-  const formatDate = new Date(date).toLocaleDateString("vi-VI");
+  // const date = postDetail?.createdAt?.seconds
+  //   ? new Date(postDetail?.createdAt?.seconds * 1000)
+  //   : new Date();
+  // const formatDate = new Date(date).toLocaleDateString("vi-VI");
 
   useEffect(() => {
     async function fetchData() {
@@ -134,6 +161,9 @@ const PostDetailsPage = () => {
       const singleDoc = await getDoc(colRef);
       setPostDetail(singleDoc.data());
     }
+
+    // const result = document.querySelector("body");
+    // result.scrollTop = 0;
 
     fetchData();
   }, [detailId]);
@@ -242,13 +272,13 @@ const PostDetailsPage = () => {
             <Input
               control={control}
               name="valueA"
-              placeholder="Enter your bid amount (>2*Bid Amount)"
+              placeholder="Confirm your deposit amount"
             ></Input>
             <Label className="mt-6">Deposit Amount</Label>
             <Input
               control={control}
               name="depositAmount"
-              placeholder="Confirm your deposit amount"
+              placeholder="Enter your bid amount (>2*Bid Amount)"
             ></Input>
             <button className="bg-[#8334cc] w-full p-3 rounded-lg text-white font-semibold mt-6">
               Confirm
@@ -265,11 +295,30 @@ const PostDetailsPage = () => {
           <div className="post-info">
             <PostCategory className="mb-6">{category.name}</PostCategory>
             <h1 className="post-heading">{postDetail.title}</h1>
-            <PostMeta
+            {/* <PostMeta
               authorName={postDetail.author}
               date={formatDate}
               className="mb-6"
-            ></PostMeta>
+            ></PostMeta> */}
+            <div className="flex flex-row max-w-[220px]">
+              <Label>Author: </Label>
+              <span className="ml-auto">{postDetail.author}</span>
+            </div>
+            <div className="flex flex-row max-w-[220px]">
+              <Label>Start day: </Label>
+              <span className="ml-auto">{postDetail.start}</span>
+            </div>
+            <div className="flex flex-row max-w-[220px]">
+              <Label>End day: </Label>
+              <span className="ml-auto">{postDetail.end}</span>
+            </div>
+            <div className="flex flex-row items-center max-w-[220px]">
+              <Label>Starting price: </Label>
+              <span id="startPrice" className="my-6 ml-auto">
+                {postDetail.startPrice} VND
+              </span>
+            </div>
+
             <Button
               onClick={() => setOpenModal(true)}
               type="button"
@@ -294,7 +343,7 @@ const PostDetailsPage = () => {
             </div>
           </div>
         </div>
-        <div className="post-related">
+        {/* <div className="post-related">
           <Heading>Related Posts</Heading>
           <div className="grid-layout grid-layout--primary">
             <PostItem></PostItem>
@@ -302,6 +351,53 @@ const PostDetailsPage = () => {
             <PostItem></PostItem>
             <PostItem></PostItem>
           </div>
+        </div> */}
+        <div className="relative">
+          <Heading>Related Posts</Heading>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="transition-all w-10 h-10 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[39%] z-40 -left-[20px] hover:scale-125"
+            onClick={handleScrollLeft}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M11.25 9l-3 3m0 0l3 3m-3-3h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+            className="transition-all w-10 h-10 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[39%] z-40 -right-[20px] hover:scale-125"
+            onClick={handleScrollRight}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12.75 15l3-3m0 0l-3-3m3 3h-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <Swiper
+            id="my_scroll2"
+            className="grid-layout grid-layout--primary scroll-smooth"
+            grabCursor={"true"}
+            spaceBetween={46}
+            slidesPerView={"auto"}
+          >
+            {posts.map((post) => (
+              <SwiperSlide key={post.id}>
+                <PostItem data={post}></PostItem>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </div>
     </PostDetailsPageStyles>
