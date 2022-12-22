@@ -46,7 +46,7 @@ const HeaderStyles = styled.header`
     margin-left: 40px;
   }
   .search {
-    padding: 0px 26px;
+    /* padding: 0px 26px; */
     width: 100%;
     max-width: 320px;
     display: flex;
@@ -62,7 +62,7 @@ const HeaderStyles = styled.header`
   }
   .search-icon {
     position: absolute;
-    right: 26px;
+    right: 16px;
   }
 `;
 
@@ -179,115 +179,188 @@ const Header = () => {
               </li>
             ))}
           </ul>
-          {userInfo && (
-            <div
-              className="ml-auto mr-[360px] z-10 cursor-pointer"
-              onMouseEnter={() => setHit(true)}
-            >
-              <li className="list-none flex items-center justify-center">
+
+          <div className="relative ml-auto mr-9">
+            {userInfo && (
+              <div
+                className="cursor-pointer absolute top-1/2 -left-14 -translate-y-1/2 z-10"
+                onMouseEnter={() => setHit(true)}
+              >
+                <li className="list-none flex items-center justify-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
+                    />
+                  </svg>
+
+                  <div
+                    onMouseLeave={() => setHit(false)}
+                    className={`transition-all shadow-2xl rounded-lg min-w-[400px] bg-white ${
+                      hit ? "absolute top-14" : "hidden"
+                    }`}
+                  >
+                    <ul>
+                      <li className="text-xl p-3 rounded-lg rounded-b-none font-semibold bg-gray-200">
+                        <h6 className="f-18 mb-0">Notifications</h6>
+                      </li>
+                      {notify.length > 0 &&
+                        notify.map((item) => (
+                          <li
+                            key={item.id}
+                            className="p-3 hover:bg-gray-100 rounded-lg rounded-t-none"
+                          >
+                            {item.status === 1 ? (
+                              <p
+                                className="text-gray-500"
+                                onClick={() =>
+                                  navigate(`${item?.slug}?id=${item?.postId}`)
+                                }
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth="1.5"
+                                  stroke="currentColor"
+                                  className="w-6 h-6 inline-block text-green-500"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M4.5 12.75l6 6 9-13.5"
+                                  />
+                                </svg>
+                                <span>
+                                  {` ${item.content}   `}
+                                  <span className="text-green-500">
+                                    accepted
+                                  </span>
+                                </span>
+                                <span className="text-gray-300">
+                                  {`  ${formatDate}`}
+                                </span>
+                              </p>
+                            ) : (
+                              <p
+                                className=" text-gray-500"
+                                onClick={() =>
+                                  navigate(`${item?.slug}?id=${item?.postId}`)
+                                }
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth="1.5"
+                                  stroke="currentColor"
+                                  className="w-6 h-6 inline-block text-red-500"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M6 18L18 6M6 6l12 12"
+                                  />
+                                </svg>
+                                <span>
+                                  {` ${item.content}   `}
+                                  <span className="text-red-500">rejected</span>
+                                </span>
+                                <span className="text-gray-300">
+                                  {`  ${formatDate}`}
+                                </span>
+                              </p>
+                            )}
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                </li>
+              </div>
+            )}
+            <form onSubmit={handleSubmit(handleSearch)} className="search">
+              {/* <input type="text" className="search-input" placeholder="Search" /> */}
+              <Input
+                className="min-w-[290px]"
+                name="search"
+                control={control}
+                placeholder="Search"
+              ></Input>
+              <span className="search-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth="1.5"
                   stroke="currentColor"
-                  className="w-6 h-6"
+                  className="w-6 h-6 text-[#292D32]"
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
                   />
                 </svg>
-
-                <div
-                  onMouseLeave={() => setHit(false)}
-                  className={`transition-all shadow-2xl rounded-lg max-w-[400px] bg-white ${
-                    hit ? "absolute top-14" : "hidden"
-                  }`}
-                >
-                  <ul>
-                    <li className="text-xl p-3 rounded-lg rounded-b-none font-semibold bg-gray-200">
-                      <h6 className="f-18 mb-0">Notifications</h6>
-                    </li>
-                    {notify.length > 0 &&
-                      notify.map((item) => (
-                        <li
-                          key={item.id}
-                          className="p-3 hover:bg-gray-100 rounded-lg rounded-t-none"
-                        >
-                          {item.status === 1 ? (
-                            <p
-                              className="text-gray-500"
-                              onClick={() =>
-                                navigate(`${item?.slug}?id=${item?.postId}`)
-                              }
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth="1.5"
-                                stroke="currentColor"
-                                className="w-6 h-6 inline-block text-green-500"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M4.5 12.75l6 6 9-13.5"
-                                />
-                              </svg>
-                              <span>
-                                {` ${item.content}   `}
-                                <span className="text-green-500">accepted</span>
-                              </span>
-                              <span className="text-gray-300">
-                                {`  ${formatDate}`}
-                              </span>
-                            </p>
-                          ) : (
-                            <p
-                              className=" text-gray-500"
-                              onClick={() =>
-                                navigate(`${item?.slug}?id=${item?.postId}`)
-                              }
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth="1.5"
-                                stroke="currentColor"
-                                className="w-6 h-6 inline-block text-red-500"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
-                              <span>
-                                {` ${item.content}   `}
-                                <span className="text-red-500">rejected</span>
-                              </span>
-                              <span className="text-gray-300">
-                                {`  ${formatDate}`}
-                              </span>
-                            </p>
-                          )}
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              </li>
+              </span>
+            </form>
+            <div
+              onMouseLeave={() => {
+                setPosts([]);
+              }}
+              className="bg-white rounded-lg shadow-lg absolute left-[23px] min-w-[374px] flex flex-col gap-y-1 p-1"
+            >
+              {loading && (
+                <div className="mx-auto my-3 loading w-8 h-8 rounded-full border-primary border-4 border-r-4 border-r-transparent animate-spin"></div>
+              )}
+              {!loading &&
+                posts.length > 0 &&
+                posts.map((post) => (
+                  <div
+                    onClick={() => {
+                      navigate(`${post.slug}?id=${post.id}`);
+                      setPosts([]);
+                      reset();
+                    }}
+                    key={post.id}
+                    className="flex flex-row gap-x-3 justify-start items-center cursor-pointer hover:opacity-60"
+                  >
+                    <div>
+                      <div className="flex items-center gap-x-3">
+                        <img
+                          src={post.image}
+                          alt=""
+                          className="w-[66px] h-[55px] rounded object-cover"
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-semibold">{post.title}</h3>
+                          <time className="text-sm text-gray-500">
+                            <span>Date: </span>
+                            {new Date(
+                              post.createdAt.seconds * 1000
+                            ).toLocaleDateString("vi-VI")}
+                          </time>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="min-w-[100px]">{post.author}</div>
+                  </div>
+                ))}
             </div>
-          )}
+          </div>
 
           {!userInfo ? (
             <Button
               type="button"
               height="58px"
-              className="header-button absolute right-[100px] top-[12px]"
+              className="header-button"
               to="/sign-in"
             >
               Sign In
@@ -298,79 +371,6 @@ const Header = () => {
               <strong className="text-primary">{userInfo?.displayName}</strong>
             </div>
           )}
-        </div>
-        <div className="absolute top-[12px] right-[220px]">
-          <form
-            onSubmit={handleSubmit(handleSearch)}
-            className={`search ${!userInfo ? "!ml-auto" : ""}`}
-          >
-            {/* <input type="text" className="search-input" placeholder="Search" /> */}
-            <Input
-              className="min-w-[290px]"
-              name="search"
-              control={control}
-              placeholder="Search"
-            ></Input>
-            <span className="search-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-6 h-6 text-[#292D32]"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                />
-              </svg>
-            </span>
-          </form>
-          <div
-            onMouseLeave={() => {
-              setPosts([]);
-            }}
-            className="bg-white rounded-lg shadow-lg absolute left-[23px] min-w-[374px] flex flex-col gap-y-1 p-1"
-          >
-            {loading && (
-              <div className="mx-auto my-3 loading w-8 h-8 rounded-full border-primary border-4 border-r-4 border-r-transparent animate-spin"></div>
-            )}
-            {!loading &&
-              posts.length > 0 &&
-              posts.map((post) => (
-                <div
-                  onClick={() => {
-                    navigate(`${post.slug}?id=${post.id}`);
-                    setPosts([]);
-                    reset();
-                  }}
-                  key={post.id}
-                  className="flex flex-row gap-x-3 justify-start items-center cursor-pointer hover:opacity-60"
-                >
-                  <div>
-                    <div className="flex items-center gap-x-3">
-                      <img
-                        src={post.image}
-                        alt=""
-                        className="w-[66px] h-[55px] rounded object-cover"
-                      />
-                      <div className="flex-1">
-                        <h3 className="font-semibold">{post.title}</h3>
-                        <time className="text-sm text-gray-500">
-                          <span>Date: </span>
-                          {new Date(
-                            post.createdAt.seconds * 1000
-                          ).toLocaleDateString("vi-VI")}
-                        </time>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="min-w-[100px]">{post.author}</div>
-                </div>
-              ))}
-          </div>
         </div>
       </div>
     </HeaderStyles>

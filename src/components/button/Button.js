@@ -63,7 +63,7 @@ const Button = ({
       </NavLink>
     );
   }
-  
+
   return (
     <ButtonStyles type={type} onClick={onClick} kind={kind} {...props}>
       {child}
