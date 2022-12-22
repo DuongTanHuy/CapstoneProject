@@ -75,7 +75,7 @@ const HomeNewest = () => {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className="transition-all w-10 h-10 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[39%] z-40 -left-[20px] hover:scale-125"
+            className="transition-all w-10 h-10 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[38%] z-40 -left-[20px] hover:scale-125"
             onClick={handleScrollLeft}
           >
             <path
@@ -91,7 +91,7 @@ const HomeNewest = () => {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className="transition-all w-10 h-10 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[39%] z-40 -right-[20px] hover:scale-125"
+            className="transition-all w-10 h-10 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[38%] z-40 -right-[20px] hover:scale-125"
             onClick={handleScrollRight}
           >
             <path

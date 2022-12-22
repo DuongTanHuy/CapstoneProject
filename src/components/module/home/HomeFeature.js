@@ -44,7 +44,7 @@ const HomeFeature = () => {
 
   return (
     <HomeFeatureStyles className="home-block">
-      <div className="container">
+      <div className="container relative">
         <Heading>Feature</Heading>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -52,7 +52,7 @@ const HomeFeature = () => {
           viewBox="0 0 24 24"
           strokeWidth="1.5"
           stroke="currentColor"
-          className="transition-all w-12 h-12 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[50%] z-40 left-3 -translate-y-[50%] hover:scale-125"
+          className="transition-all w-12 h-12 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[50%] translate-y-[12px] z-40 left-0 hover:scale-125"
           onClick={handleScrollLeft}
         >
           <path
@@ -68,7 +68,7 @@ const HomeFeature = () => {
           viewBox="0 0 24 24"
           strokeWidth="1.5"
           stroke="currentColor"
-          className="transition-all w-12 h-12 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[50%] z-40 right-3 -translate-y-[50%] hover:scale-125"
+          className="transition-all w-12 h-12 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[50%] translate-y-[12px] z-40 right-0 hover:scale-125"
           onClick={handleScrollRight}
         >
           <path
