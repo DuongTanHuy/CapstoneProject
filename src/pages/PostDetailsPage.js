@@ -16,6 +16,8 @@ import { Input } from "components/input";
 import { useMeta } from "contexts/metamask-context";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/scss";
+import { toast } from "react-toastify";
+import { useAuth } from "contexts/auth-context";
 const PostDetailsPageStyles = styled.div`
   /* padding-bottom: 100px; */
   .post {
@@ -106,6 +108,7 @@ const PostDetailsPageStyles = styled.div`
 const PostDetailsPage = () => {
   const [params] = useSearchParams();
   const detailId = params.get("id");
+  const { userInfo } = useAuth();
 
   const [posts, setPosts] = useState([]);
   const [postDetail, setPostDetail] = useState([]);
@@ -226,6 +229,14 @@ const PostDetailsPage = () => {
     }
   };
 
+  const handleOpenModal = () => {
+    if (!userInfo) {
+      toast.warn("You must be logged in to use this function!");
+      return;
+    }
+    setOpenModal(true);
+  };
+
   return (
     <PostDetailsPageStyles>
       <ModalAdvanced visible={openModal} onClose={() => setOpenModal(false)}>
@@ -320,7 +331,7 @@ const PostDetailsPage = () => {
             </div>
 
             <Button
-              onClick={() => setOpenModal(true)}
+              onClick={handleOpenModal}
               type="button"
               kind="secondary"
               className="shadow-2xl border border-violet-600 hover:opacity-80"
@@ -360,7 +371,7 @@ const PostDetailsPage = () => {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className="transition-all w-10 h-10 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[39%] z-40 -left-[20px] hover:scale-125"
+            className="transition-all w-10 h-10 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[38%] z-40 -left-[20px] hover:scale-125"
             onClick={handleScrollLeft}
           >
             <path
@@ -376,7 +387,7 @@ const PostDetailsPage = () => {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            className="transition-all w-10 h-10 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[39%] z-40 -right-[20px] hover:scale-125"
+            className="transition-all w-10 h-10 cursor-pointer bg-white rounded-full text-gray-500 absolute top-[38%] z-40 -right-[20px] hover:scale-125"
             onClick={handleScrollRight}
           >
             <path

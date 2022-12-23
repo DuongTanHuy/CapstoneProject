@@ -315,7 +315,7 @@ const Header = () => {
               onMouseLeave={() => {
                 setPosts([]);
               }}
-              className="bg-white rounded-lg shadow-lg absolute left-[23px] min-w-[374px] flex flex-col gap-y-1 p-1"
+              className="bg-white rounded-lg shadow-lg absolute min-w-[374px] flex flex-col gap-y-1 p-1"
             >
               {loading && (
                 <div className="mx-auto my-3 loading w-8 h-8 rounded-full border-primary border-4 border-r-4 border-r-transparent animate-spin"></div>

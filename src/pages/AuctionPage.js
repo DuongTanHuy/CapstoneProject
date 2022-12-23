@@ -22,6 +22,10 @@ import Swal from "sweetalert2";
 import { postStatus } from "untils/constants";
 import lodash from "lodash";
 import DashboardHeading from "components/module/dashboard/DashboardHeading";
+import getWeb3 from "getWeb3";
+import { useMeta } from "contexts/metamask-context";
+import BlindAuction from "../contracts/BlindAuction.json";
+import Market from "../contracts/Market.json";
 
 const POSTS_PER_PAGE = 5;
 
@@ -156,6 +160,64 @@ const AuctionPage = () => {
     setLastDoc(lastVisible);
   };
 
+  const {
+    web3,
+    setAccounts,
+    initialized,
+    setInit,
+    setWeb3,
+    setMarket,
+    setCurrentAccounts,
+    setBlindContract,
+  } = useMeta();
+
+  const handleConnect = async () => {
+    try {
+      const web3 = await getWeb3();
+      const accounts = await web3.eth.getAccounts();
+      const networkId = await web3.eth.net.getId();
+      const deployedNetwork2 = BlindAuction.networks[networkId];
+      const instance2 = await new web3.eth.Contract(
+        BlindAuction.abi,
+        deployedNetwork2 && deployedNetwork2?.address
+      );
+      instance2.options.address = deployedNetwork2?.address;
+      const deployedNetwork4 = Market.networks[networkId];
+      const instance4 = await new web3.eth.Contract(
+        Market.abi,
+        deployedNetwork4 && deployedNetwork4.address
+      );
+      instance4.options.address = deployedNetwork4.address;
+
+      setWeb3(web3);
+      setMarket(instance4);
+      setAccounts(accounts);
+      setBlindContract(instance2);
+      setInit(true);
+      setCurrentAccounts(accounts[0]);
+      init();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const init = async () => {
+    if (initialized === false) return;
+    const accounts = await web3.eth.getAccounts();
+    setAccounts(accounts);
+  };
+
+  const handleCreate = () => {
+    if (!web3) {
+      toast.error("You must login to metamask! Click here.", {
+        pauseOnHover: false,
+        onClick: () => handleConnect(),
+      });
+      return;
+    }
+    navigate("/auction/create-auction");
+  };
+
   return (
     <div>
       <DashboardHeading
@@ -170,7 +232,7 @@ const AuctionPage = () => {
             className="w-full p-4 rounded-lg border-2 border-solid border-gray-300 outline-none focus:border-primary"
             placeholder="Search post..."
           />
-          <Button to="/auction/create-auction" className="min-w-[170px]">
+          <Button onClick={handleCreate} className="min-w-[170px]">
             Create auction
           </Button>
         </div>
