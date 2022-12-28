@@ -204,82 +204,140 @@ const Header = () => {
 
                   <div
                     onMouseLeave={() => setHit(false)}
-                    className={`transition-all shadow-2xl rounded-lg min-w-[400px] bg-white ${
+                    className={`transition-all shadow-2xl rounded-lg min-w-[440px] bg-white ${
                       hit ? "absolute top-14" : "hidden"
                     }`}
                   >
                     <ul>
-                      <li className="text-xl p-3 rounded-lg rounded-b-none font-semibold bg-gray-200">
-                        <h6 className="f-18 mb-0">Notifications</h6>
+                      <li className="text-[28px] p-3 rounded-lg rounded-b-none flex flex-row items-center">
+                        <h6 className="pt-3">Notifications</h6>
+                        <span
+                          className="p-1 rounded-full hover:shadow-lg ml-auto"
+                          onClick={() => setHit(false)}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.5"
+                            stroke="currentColor"
+                            className="w-9 h-9"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                        </span>
                       </li>
                       {notify.length > 0 &&
                         notify.map((item) => (
-                          <li
+                          <div
                             key={item.id}
-                            className="p-3 hover:bg-gray-100 rounded-lg rounded-t-none"
+                            className="flex flex-col gap-y-2 mt-2"
                           >
-                            {item.status === 1 ? (
-                              <p
-                                className="text-gray-500"
-                                onClick={() =>
-                                  navigate(`${item?.slug}?id=${item?.postId}`)
-                                }
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth="1.5"
-                                  stroke="currentColor"
-                                  className="w-6 h-6 inline-block text-green-500"
+                            <li className="px-6 hover:bg-gray-100 rounded-lg rounded-t-none">
+                              {item.status === 1 ? (
+                                <div
+                                  className="flex flex-row gap-x-3 items-center"
+                                  onClick={() =>
+                                    navigate(`${item?.slug}?id=${item?.postId}`)
+                                  }
                                 >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M4.5 12.75l6 6 9-13.5"
-                                  />
-                                </svg>
-                                <span>
-                                  {` ${item.content}   `}
-                                  <span className="text-green-500">
-                                    accepted
-                                  </span>
-                                </span>
-                                <span className="text-gray-300">
-                                  {`  ${formatDate}`}
-                                </span>
-                              </p>
-                            ) : (
-                              <p
-                                className=" text-gray-500"
-                                onClick={() =>
-                                  navigate(`${item?.slug}?id=${item?.postId}`)
-                                }
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth="1.5"
-                                  stroke="currentColor"
-                                  className="w-6 h-6 inline-block text-red-500"
+                                  <div className=" w-[50px] h-[50px] rounded-full overflow-hidden">
+                                    <img
+                                      className="w-full h-full object-cover"
+                                      src={
+                                        item.image ||
+                                        "https://images.unsplash.com/photo-1670272499188-79fe22656f64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80"
+                                      }
+                                      alt=""
+                                    />
+                                  </div>
+                                  <div className="text-gray-500 flex flex-col">
+                                    <span className="font-semibold">
+                                      {`${item.content}   `}
+                                    </span>
+                                    <div className="grid grid-cols-2 gap-x-3">
+                                      <span className="flex flex-row">
+                                        Status:{" "}
+                                        <span className="text-green-500 flex flex-row items-center justify-center">
+                                          accepted
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth="1.5"
+                                            stroke="currentColor"
+                                            className="w-6 h-6 inline-block text-green-500"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              d="M4.5 12.75l6 6 9-13.5"
+                                            />
+                                          </svg>
+                                        </span>
+                                      </span>
+                                      <span className="text-gray-300">
+                                        {`Date: ${formatDate}`}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div
+                                  className="flex flex-row gap-x-3 items-center"
+                                  onClick={() =>
+                                    navigate(`${item?.slug}?id=${item?.postId}`)
+                                  }
                                 >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M6 18L18 6M6 6l12 12"
-                                  />
-                                </svg>
-                                <span>
-                                  {` ${item.content}   `}
-                                  <span className="text-red-500">rejected</span>
-                                </span>
-                                <span className="text-gray-300">
-                                  {`  ${formatDate}`}
-                                </span>
-                              </p>
-                            )}
-                          </li>
+                                  <div className=" w-[50px] h-[50px] rounded-full overflow-hidden">
+                                    <img
+                                      className="w-full h-full object-cover"
+                                      src={
+                                        item.image ||
+                                        "https://images.unsplash.com/photo-1670272499188-79fe22656f64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80"
+                                      }
+                                      alt=""
+                                    />
+                                  </div>
+                                  <div className="text-gray-500 flex flex-col">
+                                    <span className="font-semibold">
+                                      {`${item.content}   `}
+                                    </span>
+                                    <div className="grid grid-cols-2 gap-x-3">
+                                      <span className="flex flex-row">
+                                        Status:{" "}
+                                        <span className="text-red-500 flex flex-row items-center justify-center">
+                                          rejected
+                                          <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            strokeWidth="1.5"
+                                            stroke="currentColor"
+                                            className="w-6 h-6 inline-block text-red-500"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              d="M6 18L18 6M6 6l12 12"
+                                            />
+                                          </svg>
+                                        </span>
+                                      </span>
+                                      <span className="text-gray-300">
+                                        {`Date: ${formatDate}`}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </li>
+                            <hr />
+                          </div>
                         ))}
                     </ul>
                   </div>

@@ -107,10 +107,11 @@ const ManagePostUpdate = () => {
   const handleNotification = async (values) => {
     const colRef = collection(db, "notify");
     await addDoc(colRef, {
-      content: `Your bid ${values.title} has been `,
+      content: values.title,
       status: Number(values.status),
       userId: values.userId,
       postId,
+      image,
       slug: values.slug,
       createdAt: serverTimestamp(),
     });

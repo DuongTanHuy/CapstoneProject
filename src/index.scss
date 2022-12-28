@@ -9,6 +9,7 @@
 }
 
 body {
+  background-color: rgba(251, 251, 251);
   font-size: 16px;
   color: #232323;
   // background-image: url("https://images.unsplash.com/photo-1517495306984-f84210f9daa8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8c2t5fGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=600&q=60");
@@ -132,7 +133,7 @@ input:-webkit-autofill:active {
   background-color: #8334cc !important;
 }
 
-#startPrice {
+#unitPrice {
   font-size: 22px;
   font-weight: 900;
   background: linear-gradient(to right bottom, #8334cc, #6ca5d9);

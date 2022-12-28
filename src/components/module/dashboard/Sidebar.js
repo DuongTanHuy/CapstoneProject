@@ -4,6 +4,8 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 const SidebarStyles = styled.div`
+  position: fixed;
+  margin-top: 100px;
   width: 300px;
   background: #ffffff;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,

@@ -12,7 +12,6 @@ import "react-quill/dist/quill.snow.css";
 import ImageUploader from "quill-image-uploader";
 import ImageUpload from "components/image/ImageUpload";
 import useHandleImage from "hooks/useHandleImage";
-import Toggle from "components/toggle/Toggle";
 import {
   addDoc,
   collection,
@@ -53,7 +52,6 @@ const PostAddNew = () => {
 
   const {
     control,
-    watch,
     setValue,
     handleSubmit,
     getValues,
@@ -72,7 +70,7 @@ const PostAddNew = () => {
     },
   });
   // const watchStatus = watch("status");
-  const watchHot = watch("hot");
+  // const watchHot = watch("hot");
   const [categories, setCategories] = useState([]);
   const [selectCategory, setSelectCategory] = useState("");
   const [loading, setLoading] = useState(false);
@@ -142,25 +140,25 @@ const PostAddNew = () => {
       let bidding_time = parseInt(
         (new Date(values.start).getTime() - Date.now()) / 1000
       );
-      let reveal_time =
-        parseInt((new Date(values.end).getTime() - Date.now()) / 1000) -
-        bidding_time;
+      // let reveal_time =
+      //   parseInt((new Date(values.end).getTime() - Date.now()) / 1000) -
+      //   bidding_time;
       if (bidding_time <= 0) {
         alert("Invalid Bidding Deadline");
         return false;
       }
-      if (reveal_time <= 0) {
-        alert("Invalid Reveal Deadline");
-        return false;
-      }
+      // if (reveal_time <= 0) {
+      //   alert("Invalid Reveal Deadline");
+      //   return false;
+      // }
 
       await blindContract.methods
         .auctionItem(
           values.prName,
-          values.desc,
+          // values.desc,
           Number(values.startPrice),
           bidding_time,
-          reveal_time
+          // reveal_time
         )
         .send({ from: accounts[0] });
     }
@@ -290,41 +288,51 @@ const PostAddNew = () => {
               </Dropdown.List>
             </Dropdown>
           </Field>
-          <div className="mt-11 flex flex-row gap-x-3">
+          <Field>
+            <Label>Product Name</Label>
             <Input
               name="prName"
               control={control}
               placeholder="Enter your product name"
             ></Input>
-            <Input
+          </Field>
+          {/* <Input
               name="desc"
               control={control}
               placeholder="Enter your product description"
-            ></Input>
-          </div>
+            ></Input> */}
           {selectCategory?.name === "Secret Auction" && (
             <>
               <Field>
-                <Input
+                {/* <Input
                   name="startPrice"
                   control={control}
                   placeholder="Enter your start price"
-                ></Input>
+                ></Input> */}
               </Field>
-              <Field>
-                <div className="flex flex-row gap-x-3">
+              <div className="grid grid-cols-2 gap-x-10">
+                <div className="relative">
+                  <Label>Start Price</Label>
                   <Input
-                    name="start"
-                    type="dateTime-local"
+                    className="mt-5"
+                    name="startPrice"
                     control={control}
+                    placeholder="Enter your start price"
                   ></Input>
+                  <span id="unitPrice" className="absolute top-[58px] right-4">
+                    VND
+                  </span>
+                </div>
+                <div>
+                  <Label>End Day</Label>
                   <Input
-                    name="end"
+                    className="mt-5"
+                    name="endDay"
                     type="dateTime-local"
                     control={control}
                   ></Input>
                 </div>
-              </Field>
+              </div>
             </>
           )}
         </div>
@@ -352,13 +360,13 @@ const PostAddNew = () => {
           </Field>
           <div className="flex flex-row justify-between transition-all gap-x-10">
             <Field>
-              <div className="flex flex-col items-center gap-y-[30px]">
+              {/* <div className="flex flex-col items-center gap-y-[30px]">
                 <Label>Feature auction</Label>
                 <Toggle
                   on={watchHot === true}
                   onClick={() => setValue("hot", !watchHot)}
                 ></Toggle>
-              </div>
+              </div> */}
             </Field>
           </div>
         </div>

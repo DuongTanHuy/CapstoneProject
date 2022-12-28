@@ -46,7 +46,8 @@ const DashboardLayout = () => {
       <DashboardHeader></DashboardHeader>
       <div className="dashboard-main">
         <Sidebar></Sidebar>
-        <div className="dashboard-children">
+        <div className="w-[300px]"></div>
+        <div className="dashboard-children mt-[100px]">
           <Outlet></Outlet>
         </div>
       </div>

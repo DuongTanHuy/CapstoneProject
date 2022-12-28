@@ -315,17 +315,17 @@ const PostDetailsPage = () => {
               <Label>Author: </Label>
               <span className="ml-auto">{postDetail.author}</span>
             </div>
-            <div className="flex flex-row max-w-[220px]">
+            {/* <div className="flex flex-row max-w-[220px]">
               <Label>Start day: </Label>
               <span className="ml-auto">{postDetail.start}</span>
-            </div>
+            </div> */}
             <div className="flex flex-row max-w-[220px]">
               <Label>End day: </Label>
-              <span className="ml-auto">{postDetail.end}</span>
+              <span className="ml-auto">{postDetail.endEnd}</span>
             </div>
             <div className="flex flex-row items-center max-w-[220px]">
               <Label>Starting price: </Label>
-              <span id="startPrice" className="my-6 ml-auto">
+              <span id="unitPrice" className="my-6 ml-auto">
                 {postDetail.startPrice} VND
               </span>
             </div>

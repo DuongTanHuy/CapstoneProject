@@ -7,12 +7,12 @@ const DashboardHeaderStyles = styled.div`
   width: 100% !important;
   padding: 16px 40px;
   /* border-bottom: 1px solid #eee; */
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
-    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   display: flex;
   justify-content: flex-end;
   gap: 20px;
   align-items: center;
+  position: fixed;
   .header-avatar {
     width: 52px;
     height: 52px;
