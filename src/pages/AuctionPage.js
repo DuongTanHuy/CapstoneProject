@@ -25,7 +25,6 @@ import DashboardHeading from "components/module/dashboard/DashboardHeading";
 import getWeb3 from "getWeb3";
 import { useMeta } from "contexts/metamask-context";
 import BlindAuction from "../contracts/BlindAuction.json";
-import Market from "../contracts/Market.json";
 
 const POSTS_PER_PAGE = 5;
 
@@ -166,7 +165,6 @@ const AuctionPage = () => {
     initialized,
     setInit,
     setWeb3,
-    setMarket,
     setCurrentAccounts,
     setBlindContract,
   } = useMeta();
@@ -182,15 +180,8 @@ const AuctionPage = () => {
         deployedNetwork2 && deployedNetwork2?.address
       );
       instance2.options.address = deployedNetwork2?.address;
-      const deployedNetwork4 = Market.networks[networkId];
-      const instance4 = await new web3.eth.Contract(
-        Market.abi,
-        deployedNetwork4 && deployedNetwork4.address
-      );
-      instance4.options.address = deployedNetwork4.address;
-
+   
       setWeb3(web3);
-      setMarket(instance4);
       setAccounts(accounts);
       setBlindContract(instance2);
       setInit(true);

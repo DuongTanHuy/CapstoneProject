@@ -27,7 +27,6 @@ import { useNavigate } from "react-router-dom";
 import { useMeta } from "contexts/metamask-context";
 import getWeb3 from "getWeb3";
 import BlindAuction from "../../../contracts/BlindAuction.json";
-import Market from "../../../contracts/Market.json";
 
 const PostAddNewStyles = styled.div``;
 
@@ -44,7 +43,6 @@ const PostAddNew = () => {
     initialized,
     setInit,
     setWeb3,
-    setMarket,
     currentAccount,
     setCurrentAccounts,
     setBlindContract,
@@ -98,15 +96,8 @@ const PostAddNew = () => {
         deployedNetwork2 && deployedNetwork2?.address
       );
       instance2.options.address = deployedNetwork2?.address;
-      const deployedNetwork4 = Market.networks[networkId];
-      const instance4 = await new web3.eth.Contract(
-        Market.abi,
-        deployedNetwork4 && deployedNetwork4.address
-      );
-      instance4.options.address = deployedNetwork4.address;
 
       setWeb3(web3);
-      setMarket(instance4);
       setAccounts(accounts);
       setBlindContract(instance2);
       setInit(true);
@@ -138,7 +129,7 @@ const PostAddNew = () => {
       setAccounts(accounts);
 
       let bidding_time = parseInt(
-        (new Date(values.start).getTime() - Date.now()) / 1000
+        (new Date(values.endDay).getTime() - Date.now()) / 1000
       );
       // let reveal_time =
       //   parseInt((new Date(values.end).getTime() - Date.now()) / 1000) -
@@ -157,7 +148,7 @@ const PostAddNew = () => {
           values.prName,
           // values.desc,
           Number(values.startPrice),
-          bidding_time,
+          bidding_time
           // reveal_time
         )
         .send({ from: accounts[0] });
@@ -172,8 +163,9 @@ const PostAddNew = () => {
       cloneValue.author = userInfo?.displayName;
 
       const marketListings = await blindContract.methods
-        .getallauctions()
+        .getAllAuctions()
         .call({ from: currentAccount });
+      console.log(marketListings);
 
       const colRef = collection(db, "posts");
       await addDoc(colRef, {
@@ -182,7 +174,10 @@ const PostAddNew = () => {
         image,
         userId: userInfo.uid,
         createdAt: serverTimestamp(),
-        auctionID: Number(await marketListings.length) - 1,
+        auctionID:
+          Number(await marketListings.length) - 1 < 0
+            ? 0
+            : Number(await marketListings.length) - 1,
       });
       toast.success("Your bid has been successfully created!");
       reset({
@@ -201,6 +196,7 @@ const PostAddNew = () => {
       navigate("/auction");
     } catch (error) {
       toast.error("Can't register for auction!");
+      console.log(error.message);
       setLoading(false);
     } finally {
       setLoading(false);

@@ -163,6 +163,11 @@ const PostDetailsPage = () => {
       const colRef = doc(db, "posts", detailId);
       const singleDoc = await getDoc(colRef);
       setPostDetail(singleDoc.data());
+      console.log(
+        await blindContract?.methods
+          .revealAuction(singleDoc.data()?.auctionID)
+          .call()
+      );
     }
 
     // const result = document.querySelector("body");
@@ -199,29 +204,18 @@ const PostDetailsPage = () => {
     fetchData();
   }, [postDetail?.userId]);
 
-  const { blindContract, web3, currentAccount } = useMeta();
+  console.log(postDetail);
+
+  const { blindContract, currentAccount } = useMeta();
 
   const handleMakeBid = async (values) => {
     if (!isValid) return;
     const cloneValues = { ...values };
     cloneValues.valueA = Number(cloneValues.valueA);
-    cloneValues.depositAmount = Number(cloneValues.depositAmount);
     try {
-      await blindContract.methods
-        .bid(
-          web3.utils.keccak256(
-            web3.eth.abi.encodeParameters(
-              ["uint256", "string"],
-              [cloneValues.valueA, cloneValues.secretKey]
-            )
-          ),
-          parseInt(postDetail.auctionID),
-          cloneValues.publicKey
-        )
-        .send({
-          from: currentAccount,
-          value: cloneValues.depositAmount,
-        });
+      await blindContract?.methods
+        .participateInAuction(Number(postDetail.auctionID), cloneValues.valueA)
+        .send({ from: currentAccount });
       window.location.reload(false);
     } catch (error) {
       console.log(error);
@@ -267,30 +261,30 @@ const PostDetailsPage = () => {
           </p>
           <hr className="bg-gray-200" />
           <div className="flex flex-col gap-y-3">
-            <Label className="mt-6">Secret Key</Label>
+            {/* <Label className="mt-6">Secret Key</Label>
             <Input
               control={control}
               name="secretKey"
               placeholder="Enter your secret key"
-            ></Input>
-            <Label className="mt-6">Public Key</Label>
+            ></Input> */}
+            {/* <Label className="mt-6">Auction ID</Label>
             <Input
               control={control}
-              name="publicKey"
+              name="aucID"
               placeholder="Confirm your public key"
-            ></Input>
+            ></Input> */}
             <Label className="mt-6">Value Amount</Label>
             <Input
               control={control}
               name="valueA"
               placeholder="Confirm your deposit amount"
             ></Input>
-            <Label className="mt-6">Deposit Amount</Label>
+            {/* <Label className="mt-6">Deposit Amount</Label>
             <Input
               control={control}
               name="depositAmount"
               placeholder="Enter your bid amount (>2*Bid Amount)"
-            ></Input>
+            ></Input> */}
             <button className="bg-[#8334cc] w-full p-3 rounded-lg text-white font-semibold mt-6">
               Confirm
             </button>

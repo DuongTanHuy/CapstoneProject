@@ -210,7 +210,7 @@ const Header = () => {
                   >
                     <ul>
                       <li className="text-[28px] p-3 rounded-lg rounded-b-none flex flex-row items-center">
-                        <h6 className="pt-3">Notifications</h6>
+                        <h6 className="pt-1">Notifications</h6>
                         <span
                           className="p-1 rounded-full hover:shadow-lg ml-auto"
                           onClick={() => setHit(false)}
@@ -235,9 +235,9 @@ const Header = () => {
                         notify.map((item) => (
                           <div
                             key={item.id}
-                            className="flex flex-col gap-y-2 mt-2"
+                            className="flex flex-col gap-y-2 mt-2 hover:opacity-60"
                           >
-                            <li className="px-6 hover:bg-gray-100 rounded-lg rounded-t-none">
+                            <li className="px-6 rounded-lg rounded-t-none">
                               {item.status === 1 ? (
                                 <div
                                   className="flex flex-row gap-x-3 items-center"

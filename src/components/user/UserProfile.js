@@ -22,7 +22,6 @@ import ModalAdvanced from "components/modal/ModalAdvanced";
 import InputPassToggle from "components/input/InputPassToggle";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Market from "../../contracts/Market.json";
 
 const schema = yup.object({
   // newPass: yup
@@ -150,7 +149,6 @@ const UserProfile = () => {
     initialized,
     setInit,
     setWeb3,
-    setMarket,
     setAccounts,
     setCurrentAccounts,
     setBlindContract,
@@ -168,17 +166,9 @@ const UserProfile = () => {
       );
       instance2.options.address = deployedNetwork2?.address;
 
-      const deployedNetwork4 = Market.networks[networkId];
-      const instance4 = await new web3.eth.Contract(
-        Market.abi,
-        deployedNetwork4 && deployedNetwork4.address
-      );
-      instance4.options.address = deployedNetwork4.address;
-
       setWeb3(web3);
       setAccounts(accounts);
       setBlindContract(instance2);
-      setMarket(instance4);
       setInit(true);
       setCurrentAccounts(accounts[0]);
       init();
