@@ -117,6 +117,8 @@ const PostDetailsPage = () => {
   const [user, setUser] = useState([]);
   const [openModal, setOpenModal] = useState(false);
 
+  const [winner, setWinner] = useState({});
+
   useEffect(() => {
     const colRef = collection(db, "posts");
     const queries = query(
@@ -155,18 +157,19 @@ const PostDetailsPage = () => {
   });
 
   // const date = postDetail?.createdAt?.seconds
-  //   ? new Date(postDetail?.createdAt?.seconds * 1000)
+  // ? new Date(postDetail?.createdAt?.seconds * 1000)
   //   : new Date();
   // const formatDate = new Date(date).toLocaleDateString("vi-VI");
 
   const callWinner = useRef();
 
   callWinner.current = async (singleDoc) => {
-    console.log(
+    setWinner(
       await blindContract?.methods
-        .revealAuction(singleDoc?.data()?.auctionID)
+        ?.revealAuction(singleDoc.data().auctionID)
         .call()
     );
+    console.log(winner);
   };
 
   useEffect(() => {
@@ -174,6 +177,7 @@ const PostDetailsPage = () => {
       const colRef = doc(db, "posts", detailId);
       const singleDoc = await getDoc(colRef);
       setPostDetail(singleDoc.data());
+
       callWinner.current(singleDoc);
     }
 
@@ -185,7 +189,7 @@ const PostDetailsPage = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const colRef = await doc(
+      const colRef = doc(
         db,
         "categories",
         postDetail?.categoryId || "1EfE0RTX3XSna0daNiz9"
@@ -196,6 +200,17 @@ const PostDetailsPage = () => {
 
     fetchData();
   }, [postDetail.categoryId]);
+
+  const { blindContract, currentAccount } = useMeta();
+
+  // const callWinner = useRef();
+
+  // callWinner.current = async (data) => {
+  //   setWinner(
+  //     await blindContract?.methods?.revealAuction(data?.auctionID).call()
+  //   );
+  //   console.log(data);
+  // };
 
   useEffect(() => {
     async function fetchData() {
@@ -210,8 +225,6 @@ const PostDetailsPage = () => {
 
     fetchData();
   }, [postDetail?.userId]);
-
-  const { blindContract, currentAccount } = useMeta();
 
   const handleMakeBid = async (values) => {
     if (!isValid) return;
@@ -310,33 +323,49 @@ const PostDetailsPage = () => {
               date={formatDate}
               className="mb-6"
             ></PostMeta> */}
-            <div className="flex flex-row max-w-[220px]">
+            <div className="flex flex-row">
               <Label>Author: </Label>
-              <span className="ml-auto">{postDetail.author}</span>
+              <span className="ml-3">{postDetail.author}</span>
             </div>
             {/* <div className="flex flex-row max-w-[220px]">
               <Label>Start day: </Label>
               <span className="ml-auto">{postDetail.start}</span>
             </div> */}
-            <div className="flex flex-row max-w-[220px]">
+            <div className="flex flex-row">
               <Label>End day: </Label>
-              <span className="ml-auto">{postDetail.endEnd}</span>
+              <span className="ml-3">{postDetail?.endDay}</span>
             </div>
-            <div className="flex flex-row items-center max-w-[220px]">
-              <Label>Starting price: </Label>
-              <span id="unitPrice" className="my-6 ml-auto">
+            <div className="flex flex-row items-center">
+              <Label>Starting price:</Label>
+              <span id="unitPrice" className="my-6 ml-3">
                 {postDetail.startPrice} VND
               </span>
             </div>
 
-            <Button
-              onClick={handleOpenModal}
-              type="button"
-              kind="secondary"
-              className="shadow-2xl border border-violet-600 hover:opacity-80"
-            >
-              Participate
-            </Button>
+            {(new Date(postDetail.endDay).getTime() - Date.now()) / 1000 <=
+            0 ? (
+              <div className="flex flex-col">
+                <div>
+                  <Label>Winner: </Label>
+                  {winner && <span className="ml-3">{winner[0]}</span>}
+                </div>
+                <div>
+                  <Label>Highest price: </Label>
+                  <span id="unitPrice" className="my-6 ml-3">
+                    {winner && `${winner[1]} VND`}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <Button
+                onClick={handleOpenModal}
+                type="button"
+                kind="secondary"
+                className="shadow-2xl border border-violet-600 hover:opacity-80"
+              >
+                Participate
+              </Button>
+            )}
           </div>
         </div>
         <div className="post-content">

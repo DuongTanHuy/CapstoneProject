@@ -86,7 +86,7 @@ const DashboardHeader = () => {
             viewBox="0 0 24 24"
             strokeWidth="1.5"
             stroke="currentColor"
-            class="w-4 h-4"
+            className="w-4 h-4"
           >
             <path
               strokeLinecap="round"
@@ -115,7 +115,7 @@ const DashboardHeader = () => {
               viewBox="0 0 24 24"
               strokeWidth="1.5"
               stroke="currentColor"
-              class="w-7 h-7"
+              className="w-7 h-7"
             >
               <path
                 strokeLinecap="round"

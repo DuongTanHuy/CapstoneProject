@@ -28,7 +28,7 @@ const HeaderStyles = styled.header`
   top: 0;
   left: 0;
   right: 0;
-  z-index: 999999;
+  z-index: 9999999999;
   padding: 16px 0;
   background-color: white;
   .header-main {

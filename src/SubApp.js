@@ -21,8 +21,8 @@ import { useAuth } from "./contexts/auth-context";
 import SignUpPage from "./pages/SignUpPage";
 
 function SubApp() {
-  const userInfo = useAuth();
-  const authenticatedUser = userInfo?.userInfo?.email === "admin@gmail.com";
+  const { userInfo } = useAuth();
+  const authenticatedUser = userInfo?.email === "admin@gmail.com";
   // const { blindContract, currentAccount } = useMeta();
   // const getData = async () => {
   //   const data = await blindContract?.methods
