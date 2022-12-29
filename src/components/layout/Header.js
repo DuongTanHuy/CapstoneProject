@@ -205,7 +205,7 @@ const Header = () => {
                   <div
                     onMouseLeave={() => setHit(false)}
                     className={`transition-all shadow-2xl rounded-lg min-w-[440px] bg-white ${
-                      hit ? "absolute top-14" : "hidden"
+                      hit ? "absolute top-12" : "hidden"
                     }`}
                   >
                     <ul>

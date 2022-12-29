@@ -18,6 +18,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/scss";
 import { toast } from "react-toastify";
 import { useAuth } from "contexts/auth-context";
+import { useRef } from "react";
 const PostDetailsPageStyles = styled.div`
   /* padding-bottom: 100px; */
   .post {
@@ -158,16 +159,22 @@ const PostDetailsPage = () => {
   //   : new Date();
   // const formatDate = new Date(date).toLocaleDateString("vi-VI");
 
+  const callWinner = useRef();
+
+  callWinner.current = async (singleDoc) => {
+    console.log(
+      await blindContract?.methods
+        .revealAuction(singleDoc?.data()?.auctionID)
+        .call()
+    );
+  };
+
   useEffect(() => {
     async function fetchData() {
       const colRef = doc(db, "posts", detailId);
       const singleDoc = await getDoc(colRef);
       setPostDetail(singleDoc.data());
-      console.log(
-        await blindContract?.methods
-          .revealAuction(singleDoc.data()?.auctionID)
-          .call()
-      );
+      callWinner.current(singleDoc);
     }
 
     // const result = document.querySelector("body");
@@ -178,7 +185,7 @@ const PostDetailsPage = () => {
 
   useEffect(() => {
     async function fetchData() {
-      const colRef = doc(
+      const colRef = await doc(
         db,
         "categories",
         postDetail?.categoryId || "1EfE0RTX3XSna0daNiz9"
@@ -203,8 +210,6 @@ const PostDetailsPage = () => {
 
     fetchData();
   }, [postDetail?.userId]);
-
-  console.log(postDetail);
 
   const { blindContract, currentAccount } = useMeta();
 
