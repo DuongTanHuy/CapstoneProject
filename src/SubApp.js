@@ -44,6 +44,10 @@ function SubApp() {
           <>
             <Route path="/" element={<DashboardLayout></DashboardLayout>}>
               <Route
+                path="/"
+                element={<DashboardPage></DashboardPage>}
+              ></Route>
+              <Route
                 path="/dashboard"
                 element={<DashboardPage></DashboardPage>}
               ></Route>

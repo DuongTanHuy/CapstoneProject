@@ -131,6 +131,7 @@ const PostAddNew = () => {
       let bidding_time = parseInt(
         (new Date(values.endDay).getTime() - Date.now()) / 1000
       );
+      console.log(bidding_time);
       // let reveal_time =
       //   parseInt((new Date(values.end).getTime() - Date.now()) / 1000) -
       //   bidding_time;
@@ -162,6 +163,8 @@ const PostAddNew = () => {
       cloneValue.status = Number(2);
       cloneValue.author = userInfo?.displayName;
 
+      // console.log(await blindContract.methods.getAllAuctions());
+
       const marketListings = await blindContract.methods
         .getAllAuctions()
         .call({ from: currentAccount });
@@ -174,10 +177,7 @@ const PostAddNew = () => {
         image,
         userId: userInfo.uid,
         createdAt: serverTimestamp(),
-        auctionID:
-          Number(await marketListings.length) - 1 < 0
-            ? 0
-            : Number(await marketListings.length) - 1,
+        auctionID: Number(marketListings.length),
       });
       toast.success("Your bid has been successfully created!");
       reset({

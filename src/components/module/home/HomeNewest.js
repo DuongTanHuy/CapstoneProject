@@ -1,6 +1,6 @@
 import Heading from "components/layout/Heading";
 import { db } from "firebase-app/firebase-config";
-import { collection, onSnapshot, query } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -30,7 +30,8 @@ const HomeNewest = () => {
   useEffect(() => {
     const colRef = collection(db, "posts");
     const queries = query(
-      colRef // set status (pending, apply...) tai day where("status","==", 1)
+      colRef, // set status (pending, apply...) tai day where("status","==", 1)
+      where("status", "==", 1)
     );
     onSnapshot(queries, (snapshot) => {
       let result = [];

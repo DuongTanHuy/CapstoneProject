@@ -3,7 +3,15 @@ import PostCategory from "components/module/post/PostCategory";
 import PostImage from "components/module/post/PostImage";
 import PostItem from "components/module/post/PostItem";
 import { db } from "firebase-app/firebase-config";
-import { collection, doc, getDoc, onSnapshot, query } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
@@ -19,6 +27,7 @@ import "swiper/scss";
 import { toast } from "react-toastify";
 import { useAuth } from "contexts/auth-context";
 import { useRef } from "react";
+import Swal from "sweetalert2";
 const PostDetailsPageStyles = styled.div`
   /* padding-bottom: 100px; */
   .post {
@@ -118,6 +127,8 @@ const PostDetailsPage = () => {
   const [openModal, setOpenModal] = useState(false);
 
   const [winner, setWinner] = useState({});
+  const [winnerId, setWinnerId] = useState("");
+  const [winnerName, setWinnerName] = useState("");
 
   useEffect(() => {
     const colRef = collection(db, "posts");
@@ -156,21 +167,51 @@ const PostDetailsPage = () => {
     defaultValues: {},
   });
 
+  const { blindContract, currentAccount } = useMeta();
+
   // const date = postDetail?.createdAt?.seconds
   // ? new Date(postDetail?.createdAt?.seconds * 1000)
   //   : new Date();
   // const formatDate = new Date(date).toLocaleDateString("vi-VI");
 
-  const callWinner = useRef();
+  const handleCallWinner = useRef();
 
-  callWinner.current = async (singleDoc) => {
-    setWinner(
-      await blindContract?.methods
-        ?.revealAuction(singleDoc.data().auctionID)
-        .call()
-    );
-    console.log(winner);
+  handleCallWinner.current = async (singleDoc) => {
+    if ((new Date(postDetail.endDay).getTime() - Date.now()) / 1000 <= 0){}
+      setWinner(
+        await blindContract?.methods
+          ?.revealAuction(singleDoc.data().auctionID)
+          .call()
+      );
   };
+
+  const handleCallWinnerName = useRef();
+  handleCallWinnerName.current = async () => {
+    if (winnerId) {
+      const colRef = doc(db, "users", winnerId);
+      const singleDoc = await getDoc(colRef);
+      setWinnerName(singleDoc.data().userName);
+    }
+  };
+
+  useEffect(() => {
+    if (winner) {
+      // console.log(winner);
+      // console.log(detailId);
+      const colRef = collection(db, "participants");
+      const queries = query(
+        colRef,
+        where("publicKey", "==", winner[0] || ""),
+        where("postID", "==", detailId || "")
+      );
+      onSnapshot(queries, (snapshot) => {
+        snapshot.forEach((doc) => {
+          setWinnerId(doc.data().userId);
+        });
+      });
+      handleCallWinnerName.current();
+    }
+  }, [detailId, winner, winnerId]);
 
   useEffect(() => {
     async function fetchData() {
@@ -178,7 +219,7 @@ const PostDetailsPage = () => {
       const singleDoc = await getDoc(colRef);
       setPostDetail(singleDoc.data());
 
-      callWinner.current(singleDoc);
+      handleCallWinner.current(singleDoc);
     }
 
     // const result = document.querySelector("body");
@@ -200,8 +241,6 @@ const PostDetailsPage = () => {
 
     fetchData();
   }, [postDetail.categoryId]);
-
-  const { blindContract, currentAccount } = useMeta();
 
   // const callWinner = useRef();
 
@@ -230,11 +269,44 @@ const PostDetailsPage = () => {
     if (!isValid) return;
     const cloneValues = { ...values };
     cloneValues.valueA = Number(cloneValues.valueA);
+    console.log(
+      cloneValues.valueA.toLocaleString("it-IT", {
+        style: "currency",
+        currency: "VND",
+      })
+    );
     try {
-      await blindContract?.methods
-        .participateInAuction(Number(postDetail.auctionID), cloneValues.valueA)
-        .send({ from: currentAccount });
-      window.location.reload(false);
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, update it!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const colRef = collection(db, "participants");
+          await addDoc(colRef, {
+            publicKey: currentAccount,
+            postID: detailId,
+            userId: userInfo.uid,
+          });
+          await blindContract?.methods
+            .participateInAuction(
+              Number(postDetail.auctionID),
+              cloneValues.valueA
+            )
+            .send({ from: currentAccount });
+          window.location.reload(false);
+          Swal.fire(
+            "Successfully!",
+            "Your price has been added to the system.",
+            "success"
+          );
+          setOpenModal(false);
+        }
+      });
     } catch (error) {
       console.log(error);
       alert(`Error: ${error.message}`);
@@ -285,18 +357,26 @@ const PostDetailsPage = () => {
               name="secretKey"
               placeholder="Enter your secret key"
             ></Input> */}
-            {/* <Label className="mt-6">Auction ID</Label>
+            {/* <Label className="mt-6">Public Key</Label>
             <Input
               control={control}
-              name="aucID"
+              name="publicKey"
               placeholder="Confirm your public key"
             ></Input> */}
-            <Label className="mt-6">Value Amount</Label>
-            <Input
-              control={control}
-              name="valueA"
-              placeholder="Confirm your deposit amount"
-            ></Input>
+            <div className="relative">
+              <Label className="mt-6">Value Amount</Label>
+              <Input
+                control={control}
+                name="valueA"
+                placeholder="Confirm your deposit amount"
+              ></Input>
+              <span
+                id="unitPrice"
+                className="ml-auto absolute right-3 top-1/2 -translate-y-[5px]"
+              >
+                VND
+              </span>
+            </div>
             {/* <Label className="mt-6">Deposit Amount</Label>
             <Input
               control={control}
@@ -347,6 +427,10 @@ const PostDetailsPage = () => {
               <div className="flex flex-col">
                 <div>
                   <Label>Winner: </Label>
+                  {winner && <span className="ml-3">{winnerName}</span>}
+                </div>
+                <div>
+                  <Label>Public key of winner: </Label>
                   {winner && <span className="ml-3">{winner[0]}</span>}
                 </div>
                 <div>
