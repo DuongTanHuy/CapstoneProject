@@ -307,16 +307,21 @@ const Header = () => {
                       ))}
                       <div className="mt-3 mb-3">
                         <div className="flex justify-between items-center">
-                          <p className="text-gray-500 dark:text-gray-200">
+                          {/* <p className="text-gray-500 dark:text-gray-200">
                             Sub Total
                           </p>
-                          <p className="font-semibold">$890</p>
+                          <p className="font-semibold">$890</p> */}
                         </div>
                         <div className="flex justify-between items-center mt-3">
-                          <p className="text-gray-500 dark:text-gray-200">
+                          <p className="text-gray-500 dark:text-gray-200 font-bold">
                             Total
                           </p>
-                          <p className="font-semibold">$890</p>
+                          <p className="font-semibold">
+                            {Number(8900000).toLocaleString("it-IT", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
+                          </p>
                         </div>
                       </div>
                     </div>

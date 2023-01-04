@@ -318,8 +318,6 @@ const PostDetailsPage = () => {
     }
   };
 
-  
-
   const handleOpenModal = () => {
     if (!userInfo) {
       toast.warn("You must be logged in to use this function!");
@@ -382,7 +380,9 @@ const PostDetailsPage = () => {
                 VND
               </span>
             </div>
-            <p className="ml-3 text-xs text-red-400 opacity-90">{`* 100000 (Một trăm nghìn đồng)`}</p>
+            <p className="ml-3 text-xs text-red-400 opacity-90">
+              {"VD: 100000 (Một trăm nghìn đồng)"}
+            </p>
             {/* <Label className="mt-6">Deposit Amount</Label>
             <Input
               control={control}
