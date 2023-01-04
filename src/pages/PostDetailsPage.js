@@ -177,12 +177,13 @@ const PostDetailsPage = () => {
   const handleCallWinner = useRef();
 
   handleCallWinner.current = async (singleDoc) => {
-    if ((new Date(postDetail.endDay).getTime() - Date.now()) / 1000 <= 0){}
-      setWinner(
-        await blindContract?.methods
-          ?.revealAuction(singleDoc.data().auctionID)
-          .call()
-      );
+    if ((new Date(postDetail.endDay).getTime() - Date.now()) / 1000 <= 0) {
+    }
+    setWinner(
+      await blindContract?.methods
+        ?.revealAuction(singleDoc.data().auctionID)
+        .call()
+    );
   };
 
   const handleCallWinnerName = useRef();
@@ -269,6 +270,10 @@ const PostDetailsPage = () => {
     if (!isValid) return;
     const cloneValues = { ...values };
     cloneValues.valueA = Number(cloneValues.valueA);
+    if (cloneValues.valueA < postDetail.startPrice) {
+      toast.warn("The entry price must be greater than the starting price!");
+      return;
+    }
     console.log(
       cloneValues.valueA.toLocaleString("it-IT", {
         style: "currency",
@@ -313,6 +318,8 @@ const PostDetailsPage = () => {
     }
   };
 
+  
+
   const handleOpenModal = () => {
     if (!userInfo) {
       toast.warn("You must be logged in to use this function!");
@@ -349,7 +356,7 @@ const PostDetailsPage = () => {
           <p className="mb-6 text-4xl font-semibold text-center text-black">
             Bid Placed
           </p>
-          <hr className="bg-gray-200" />
+          <hr className="bg-gray-200 mb-3" />
           <div className="flex flex-col gap-y-3">
             {/* <Label className="mt-6">Secret Key</Label>
             <Input
@@ -364,19 +371,18 @@ const PostDetailsPage = () => {
               placeholder="Confirm your public key"
             ></Input> */}
             <div className="relative">
-              <Label className="mt-6">Value Amount</Label>
+              <Label>Value Amount</Label>
               <Input
+                className="mt-3"
                 control={control}
                 name="valueA"
                 placeholder="Confirm your deposit amount"
               ></Input>
-              <span
-                id="unitPrice"
-                className="ml-auto absolute right-3 top-1/2 -translate-y-[5px]"
-              >
+              <span id="unitPrice" className="ml-auto absolute right-3 top-1/2">
                 VND
               </span>
             </div>
+            <p className="ml-3 text-xs text-red-400 opacity-90">{`* 100000 (Một trăm nghìn đồng)`}</p>
             {/* <Label className="mt-6">Deposit Amount</Label>
             <Input
               control={control}
@@ -413,12 +419,17 @@ const PostDetailsPage = () => {
             </div> */}
             <div className="flex flex-row">
               <Label>End day: </Label>
-              <span className="ml-3">{postDetail?.endDay}</span>
+              <span className="ml-3">
+                {new Date(postDetail?.endDay).toLocaleString("vn")}
+              </span>
             </div>
             <div className="flex flex-row items-center">
               <Label>Starting price:</Label>
               <span id="unitPrice" className="my-6 ml-3">
-                {postDetail.startPrice} VND
+                {Number(postDetail.startPrice).toLocaleString("it-IT", {
+                  style: "currency",
+                  currency: "VND",
+                })}
               </span>
             </div>
 
@@ -436,7 +447,11 @@ const PostDetailsPage = () => {
                 <div>
                   <Label>Highest price: </Label>
                   <span id="unitPrice" className="my-6 ml-3">
-                    {winner && `${winner[1]} VND`}
+                    {winner &&
+                      `${Number(winner[1]).toLocaleString("it-IT", {
+                        style: "currency",
+                        currency: "VND",
+                      })}`}
                   </span>
                 </div>
               </div>

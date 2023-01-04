@@ -1,10 +1,21 @@
 import Portal from "./Portal";
 import { CSSTransition } from "react-transition-group";
 
-const ModalBase = ({ visible, children, onClose, ...props }) => {
+const ModalBase = ({
+  visible,
+  children,
+  onClose,
+  effect = "zoom",
+  ...props
+}) => {
   return (
     <>
-      <CSSTransition in={visible} timeout={300} classNames="zoom" unmountOnExit>
+      <CSSTransition
+        in={visible}
+        timeout={300}
+        classNames={effect}
+        unmountOnExit
+      >
         {(status) => (
           <Portal
             visible={visible !== "exited"}

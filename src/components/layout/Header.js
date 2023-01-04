@@ -1,8 +1,16 @@
 import { Button } from "components/button";
 import { Input } from "components/input";
+import ModalAdvanced from "components/modal/ModalAdvanced";
 import { useAuth } from "contexts/auth-context";
 import { db } from "firebase-app/firebase-config";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -78,6 +86,9 @@ const Header = () => {
   const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState("");
   const [loading, setLoading] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [myAuction, setMyAuction] = useState([]);
+  const [auctionParticipated, setAuctionParticipated] = useState([]);
   const date = notify?.createdAt?.seconds
     ? new Date(notify?.createdAt?.seconds * 1000)
     : new Date();
@@ -114,6 +125,41 @@ const Header = () => {
       setNotify(result);
     });
   }, [userInfo?.uid]);
+
+  useEffect(() => {
+    const colRef = collection(db, "participants");
+    const queries = query(
+      colRef, // set status (pending, apply...) tai day where("status","==", 1)
+      where("userId", "==", userInfo?.uid ? userInfo.uid : "")
+    );
+    onSnapshot(queries, (snapshot) => {
+      let result = [];
+      snapshot.forEach((doc) => {
+        result.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      setMyAuction(result);
+    });
+  }, [userInfo?.uid]);
+
+  useEffect(() => {
+    if (!myAuction) return;
+    let data = [];
+    async function fetchData(postId) {
+      if (!postId) return;
+      const colRef = doc(db, "posts", postId);
+      const singleDoc = await getDoc(colRef);
+      if (singleDoc.data()) {
+        data = [...data, { ...singleDoc.data(), postId }];
+        setAuctionParticipated(data);
+      }
+    }
+    for (let i = 0; i < myAuction.length; i++) {
+      fetchData(myAuction[i].postID);
+    }
+  }, [myAuction]);
 
   const handleSearch = (value) => {
     if (!isValid) return;
@@ -182,38 +228,21 @@ const Header = () => {
 
           <div className="relative ml-auto mr-9">
             {userInfo && (
-              <div
-                className="cursor-pointer absolute top-1/2 -left-14 -translate-y-1/2 z-10"
-                onMouseEnter={() => setHit(true)}
-              >
-                <li className="list-none flex items-center justify-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
-                    />
-                  </svg>
-
-                  <div
-                    onMouseLeave={() => setHit(false)}
-                    className={`transition-all shadow-2xl rounded-lg min-w-[440px] bg-white ${
-                      hit ? "absolute top-12" : "hidden"
-                    }`}
-                  >
-                    <ul>
-                      <li className="text-[28px] p-3 rounded-lg rounded-b-none flex flex-row items-center">
-                        <h6 className="pt-1">Notifications</h6>
+              <div className="absolute top-1/2 -left-9">
+                <ModalAdvanced
+                  effect="list-transition"
+                  visible={openModal}
+                  onClose={() => setOpenModal(false)}
+                >
+                  <div className="content bg-half-transparent w-full fixed nav-item top-[92px] right-0 ">
+                    <div className="float-right h-screen  duration-1000 ease-in-out dark:text-gray-200 transition-all dark:bg-[#484B52] bg-white md:w-400 p-8">
+                      <div className="flex justify-between items-center">
+                        <p className="font-semibold text-lg">
+                          Auction participated
+                        </p>
                         <span
-                          className="p-1 rounded-full hover:shadow-lg ml-auto"
-                          onClick={() => setHit(false)}
+                          className="cursor-pointer p-2 rounded-full hover:shadow-lg"
+                          onClick={() => setOpenModal(false)}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -221,7 +250,7 @@ const Header = () => {
                             viewBox="0 0 24 24"
                             strokeWidth="1.5"
                             stroke="currentColor"
-                            className="w-9 h-9"
+                            className="w-6 h-6"
                           >
                             <path
                               strokeLinecap="round"
@@ -230,118 +259,243 @@ const Header = () => {
                             />
                           </svg>
                         </span>
-                      </li>
-                      {notify.length > 0 &&
-                        notify.map((item) => (
-                          <div
-                            key={item.id}
-                            className="flex flex-col gap-y-2 mt-2 hover:opacity-60"
-                          >
-                            <li className="px-6 rounded-lg rounded-t-none">
-                              {item.status === 1 ? (
-                                <div
-                                  className="flex flex-row gap-x-3 items-center"
-                                  onClick={() =>
-                                    navigate(`${item?.slug}?id=${item?.postId}`)
-                                  }
-                                >
-                                  <div className=" w-[50px] h-[50px] rounded-full overflow-hidden">
-                                    <img
-                                      className="w-full h-full object-cover"
-                                      src={
-                                        item.image ||
-                                        "https://images.unsplash.com/photo-1670272499188-79fe22656f64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80"
+                      </div>
+                      {auctionParticipated?.map((auction, index) => (
+                        <div
+                          className="cursor-pointer"
+                          key={index}
+                          onClick={() =>
+                            navigate(`${auction.slug}?id=${auction.postId}`)
+                          }
+                        >
+                          <div>
+                            <div className="flex items-center   leading-8 gap-5 border-b-1 border-color dark:border-gray-600 p-4">
+                              <img
+                                className="rounded-lg h-24 w-24"
+                                src={auction.image}
+                                alt=""
+                              />
+                              <div>
+                                <p className="font-semibold ">
+                                  {auction.title}
+                                </p>
+                                <p className="text-gray-600 dark:text-gray-400 text-sm font-semibold">
+                                  {auction.author}
+                                </p>
+                                <div className="flex gap-4 mt-2 items-center">
+                                  <p id="unitPrice">
+                                    {Number(auction.startPrice).toLocaleString(
+                                      "it-IT",
+                                      {
+                                        style: "currency",
+                                        currency: "VND",
                                       }
-                                      alt=""
-                                    />
-                                  </div>
-                                  <div className="text-gray-500 flex flex-col">
-                                    <span className="font-semibold">
-                                      {`${item.content}   `}
-                                    </span>
-                                    <div className="grid grid-cols-2 gap-x-3">
-                                      <span className="flex flex-row">
-                                        Status:{" "}
-                                        <span className="text-green-500 flex flex-row items-center justify-center">
-                                          accepted
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth="1.5"
-                                            stroke="currentColor"
-                                            className="w-6 h-6 inline-block text-green-500"
-                                          >
-                                            <path
-                                              strokeLinecap="round"
-                                              strokeLinejoin="round"
-                                              d="M4.5 12.75l6 6 9-13.5"
-                                            />
-                                          </svg>
-                                        </span>
-                                      </span>
-                                      <span className="text-gray-300">
-                                        {`Date: ${formatDate}`}
-                                      </span>
-                                    </div>
+                                    )}
+                                  </p>
+                                  <div className="flex items-center border-1 border-r-0 border-color rounded">
+                                    <p className="p-2 border-r-1 dark:border-gray-600 border-color text-red-600 "></p>
+                                    {/* <p className="p-2 border-r-1 border-color dark:border-gray-600 text-green-600">
+                                      VND
+                                    </p> */}
+                                    <p className="p-2 border-r-1 border-color dark:border-gray-600 text-green-600"></p>
                                   </div>
                                 </div>
-                              ) : (
-                                <div
-                                  className="flex flex-row gap-x-3 items-center"
-                                  onClick={() =>
-                                    navigate(`${item?.slug}?id=${item?.postId}`)
-                                  }
-                                >
-                                  <div className=" w-[50px] h-[50px] rounded-full overflow-hidden">
-                                    <img
-                                      className="w-full h-full object-cover"
-                                      src={
-                                        item.image ||
-                                        "https://images.unsplash.com/photo-1670272499188-79fe22656f64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80"
-                                      }
-                                      alt=""
-                                    />
-                                  </div>
-                                  <div className="text-gray-500 flex flex-col">
-                                    <span className="font-semibold">
-                                      {`${item.content}   `}
-                                    </span>
-                                    <div className="grid grid-cols-2 gap-x-3">
-                                      <span className="flex flex-row">
-                                        Status:{" "}
-                                        <span className="text-red-500 flex flex-row items-center justify-center">
-                                          rejected
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth="1.5"
-                                            stroke="currentColor"
-                                            className="w-6 h-6 inline-block text-red-500"
-                                          >
-                                            <path
-                                              strokeLinecap="round"
-                                              strokeLinejoin="round"
-                                              d="M6 18L18 6M6 6l12 12"
-                                            />
-                                          </svg>
-                                        </span>
-                                      </span>
-                                      <span className="text-gray-300">
-                                        {`Date: ${formatDate}`}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </li>
-                            <hr />
+                              </div>
+                            </div>
                           </div>
-                        ))}
-                    </ul>
+                        </div>
+                      ))}
+                      <div className="mt-3 mb-3">
+                        <div className="flex justify-between items-center">
+                          <p className="text-gray-500 dark:text-gray-200">
+                            Sub Total
+                          </p>
+                          <p className="font-semibold">$890</p>
+                        </div>
+                        <div className="flex justify-between items-center mt-3">
+                          <p className="text-gray-500 dark:text-gray-200">
+                            Total
+                          </p>
+                          <p className="font-semibold">$890</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </li>
+                </ModalAdvanced>
+                <div className="cursor-pointer absolute top-1/2 -left-14 -translate-y-1/2 z-10">
+                  <li className="list-none flex items-center justify-center">
+                    <div className="flex flex-row gap-x-4 justify-center items-center">
+                      <span onClick={() => setOpenModal(true)}>
+                        <img
+                          className="scale-[126%]"
+                          src="/auction.png"
+                          alt=""
+                        />
+                      </span>
+
+                      <span onClick={() => setHit(true)}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="1.5"
+                          stroke="currentColor"
+                          className="w-6 h-6"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0M3.124 7.5A8.969 8.969 0 015.292 3m13.416 0a8.969 8.969 0 012.168 4.5"
+                          />
+                        </svg>
+                      </span>
+                    </div>
+
+                    <div
+                      onMouseLeave={() => setHit(false)}
+                      className={`transition-all shadow-2xl rounded-lg min-w-[440px] bg-white ${
+                        hit ? "absolute top-12" : "absolute top-12 donShow"
+                      }`}
+                    >
+                      <ul>
+                        <li className="text-[28px] p-3 rounded-lg rounded-b-none flex flex-row items-center">
+                          <h6 className="pt-1">Notifications</h6>
+                          <span
+                            className="p-1 rounded-full hover:shadow-lg ml-auto"
+                            onClick={() => setHit(false)}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="1.5"
+                              stroke="currentColor"
+                              className="w-9 h-9"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                          </span>
+                        </li>
+                        {notify.length > 0 &&
+                          notify.map((item) => (
+                            <div
+                              key={item.id}
+                              className="flex flex-col gap-y-2 mt-2 hover:opacity-60"
+                            >
+                              <li className="px-6 rounded-lg rounded-t-none">
+                                {item.status === 1 ? (
+                                  <div
+                                    className="flex flex-row gap-x-3 items-center"
+                                    onClick={() =>
+                                      navigate(
+                                        `${item?.slug}?id=${item?.postId}`
+                                      )
+                                    }
+                                  >
+                                    <div className=" w-[50px] h-[50px] rounded-full overflow-hidden">
+                                      <img
+                                        className="w-full h-full object-cover"
+                                        src={
+                                          item.image ||
+                                          "https://images.unsplash.com/photo-1670272499188-79fe22656f64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80"
+                                        }
+                                        alt=""
+                                      />
+                                    </div>
+                                    <div className="text-gray-500 flex flex-col">
+                                      <span className="font-semibold">
+                                        {`${item.content}   `}
+                                      </span>
+                                      <div className="grid grid-cols-2 gap-x-3">
+                                        <span className="flex flex-row">
+                                          Status:{" "}
+                                          <span className="text-green-500 flex flex-row items-center justify-center">
+                                            accepted
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              fill="none"
+                                              viewBox="0 0 24 24"
+                                              strokeWidth="1.5"
+                                              stroke="currentColor"
+                                              className="w-6 h-6 inline-block text-green-500"
+                                            >
+                                              <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M4.5 12.75l6 6 9-13.5"
+                                              />
+                                            </svg>
+                                          </span>
+                                        </span>
+                                        <span className="text-gray-300">
+                                          {`Date: ${formatDate}`}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className="flex flex-row gap-x-3 items-center"
+                                    onClick={() =>
+                                      navigate(
+                                        `${item?.slug}?id=${item?.postId}`
+                                      )
+                                    }
+                                  >
+                                    <div className=" w-[50px] h-[50px] rounded-full overflow-hidden">
+                                      <img
+                                        className="w-full h-full object-cover"
+                                        src={
+                                          item.image ||
+                                          "https://images.unsplash.com/photo-1670272499188-79fe22656f64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80"
+                                        }
+                                        alt=""
+                                      />
+                                    </div>
+                                    <div className="text-gray-500 flex flex-col">
+                                      <span className="font-semibold">
+                                        {`${item.content}   `}
+                                      </span>
+                                      <div className="grid grid-cols-2 gap-x-3">
+                                        <span className="flex flex-row">
+                                          Status:{" "}
+                                          <span className="text-red-500 flex flex-row items-center justify-center">
+                                            rejected
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              fill="none"
+                                              viewBox="0 0 24 24"
+                                              strokeWidth="1.5"
+                                              stroke="currentColor"
+                                              className="w-6 h-6 inline-block text-red-500"
+                                            >
+                                              <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M6 18L18 6M6 6l12 12"
+                                              />
+                                            </svg>
+                                          </span>
+                                        </span>
+                                        <span className="text-gray-300">
+                                          {`Date: ${formatDate}`}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </li>
+                              <hr />
+                            </div>
+                          ))}
+                      </ul>
+                    </div>
+                  </li>
+                </div>
               </div>
             )}
             <form onSubmit={handleSubmit(handleSearch)} className="search">

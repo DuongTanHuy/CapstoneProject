@@ -120,6 +120,41 @@ input:-webkit-autofill:active {
   transform: scale(0);
 }
 
+.list-transition-enter .content {
+  /*We give the list the initial dimension of the list button*/
+  right: -100%;
+}
+/* This is where we can add the transition*/
+.list-transition-enter-active .content {
+  right: 0px;
+}
+/* This fires as soon as the this.state.showList is false */
+.list-transition-exit .content {
+  right: 0px;
+}
+/* fires as element leaves the DOM*/
+.list-transition-exit-active .content {
+  right: -100%;
+}
+
+.transition-all.shadow-2xl.rounded-lg.bg-white {
+  overflow: hidden;
+  transition: all 0.3s linear;
+}
+
+.transition-all.shadow-2xl.rounded-lg.bg-white.absolute.top-12.donShow {
+  // transform: translateY(-160%);
+  width: 0px;
+  height: 0px;
+  opacity: 0;
+}
+
+.transition-all.shadow-2xl.rounded-lg.bg-white.absolute.top-12 {
+  // width: 440px;
+  height: 606px;
+  opacity: 1;
+}
+
 .swal2-container.swal2-center.swal2-backdrop-show {
   z-index: 99999999999999;
 }
