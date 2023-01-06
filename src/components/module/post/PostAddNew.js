@@ -27,10 +27,21 @@ import { useNavigate } from "react-router-dom";
 import { useMeta } from "contexts/metamask-context";
 import getWeb3 from "getWeb3";
 import BlindAuction from "../../../contracts/BlindAuction.json";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 const PostAddNewStyles = styled.div``;
 
 Quill.register("modules/imageUploader", ImageUploader);
+
+const schema = yup.object({
+  title: yup.string().required("Title is required."),
+  startPrice: yup
+    .number()
+    .typeError("That doesn't look like a Value.")
+    .required("Start price is required."),
+  endDay: yup.string().required("End day is required."),
+});
 
 const PostAddNew = () => {
   const { userInfo } = useAuth();
@@ -54,9 +65,10 @@ const PostAddNew = () => {
     handleSubmit,
     getValues,
     reset,
-    formState: { isValid },
+    formState: { isValid, errors },
   } = useForm({
     mode: "onChange",
+    resolver: yupResolver(schema),
     defaultValues: {
       author: "",
       title: "",
@@ -123,6 +135,15 @@ const PostAddNew = () => {
       });
       return;
     }
+    const arrErrors = Object.values(errors);
+    if (arrErrors.length > 0) {
+      toast.error(arrErrors[0]?.message, {
+        delay: 0,
+        pauseOnHover: false,
+        // draggableDirection: "y",
+      });
+      return;
+    }
     setLoading(true);
     async function createAuction() {
       const accounts = await web3?.eth?.getAccounts();
@@ -153,54 +174,53 @@ const PostAddNew = () => {
           // reveal_time
         )
         .send({ from: accounts[0] });
+      try {
+        const cloneValue = { ...values };
+        cloneValue.slug = slugify(values.title, { lower: true });
+        cloneValue.status = Number(2);
+        cloneValue.author = userInfo?.displayName;
+
+        // console.log(await blindContract.methods.getAllAuctions());
+
+        const marketListings = await blindContract.methods
+          .getAllAuctions()
+          .call({ from: currentAccount });
+        console.log(marketListings);
+
+        const colRef = collection(db, "posts");
+        await addDoc(colRef, {
+          ...cloneValue,
+          content: content,
+          image,
+          userId: userInfo.uid,
+          createdAt: serverTimestamp(),
+          auctionID: Number(marketListings.length) - 1,
+        });
+        toast.success("Your bid has been successfully created!");
+        reset({
+          author: "",
+          title: "",
+          slug: "",
+          status: 2,
+          hot: false,
+          categoryId: "",
+          image: "",
+        });
+        setContent("");
+        handleResetUpload();
+        setSelectCategory({});
+
+        navigate("/auction");
+      } catch (error) {
+        toast.error("Can't register for auction!");
+        console.log(error.message);
+        setLoading(false);
+      } finally {
+        setLoading(false);
+      }
     }
 
     createAuction();
-
-    try {
-      const cloneValue = { ...values };
-      cloneValue.slug = slugify(values.title, { lower: true });
-      cloneValue.status = Number(2);
-      cloneValue.author = userInfo?.displayName;
-
-      // console.log(await blindContract.methods.getAllAuctions());
-
-      const marketListings = await blindContract.methods
-        .getAllAuctions()
-        .call({ from: currentAccount });
-      console.log(marketListings);
-
-      const colRef = collection(db, "posts");
-      await addDoc(colRef, {
-        ...cloneValue,
-        content: content,
-        image,
-        userId: userInfo.uid,
-        createdAt: serverTimestamp(),
-        auctionID: Number(marketListings.length),
-      });
-      toast.success("Your bid has been successfully created!");
-      reset({
-        author: "",
-        title: "",
-        slug: "",
-        status: 2,
-        hot: false,
-        categoryId: "",
-        image: "",
-      });
-      setContent("");
-      handleResetUpload();
-      setSelectCategory({});
-
-      navigate("/auction");
-    } catch (error) {
-      toast.error("Can't register for auction!");
-      console.log(error.message);
-      setLoading(false);
-    } finally {
-      setLoading(false);
-    }
   };
 
   useEffect(() => {
@@ -253,7 +273,6 @@ const PostAddNew = () => {
               control={control}
               placeholder="Enter your title"
               name="title"
-              required
             ></Input>
           </Field>
           <Field>

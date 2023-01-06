@@ -62,7 +62,7 @@ const DashboardHeader = () => {
         to={"/"}
         className="logo flex flex-row gap-x-5 items-center justify-center mr-auto"
       >
-        <img srcSet="/Logo.png 3.6x" alt="" />
+        <img className="w-[50px] h-[50px]" srcSet="/Logo.png 3.6x" alt="" />
         <span className="text-primary font-semibold text-2xl">
           Smart Tender
         </span>

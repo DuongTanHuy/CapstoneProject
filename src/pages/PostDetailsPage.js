@@ -28,6 +28,10 @@ import { toast } from "react-toastify";
 import { useAuth } from "contexts/auth-context";
 import { useRef } from "react";
 import Swal from "sweetalert2";
+import { Table } from "components/table";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
 const PostDetailsPageStyles = styled.div`
   /* padding-bottom: 100px; */
   .post {
@@ -115,6 +119,13 @@ const PostDetailsPageStyles = styled.div`
   }
 `;
 
+const schema = yup.object({
+  valueA: yup
+    .number()
+    .typeError("That doesn't look like a Value Amount.")
+    .required("A Value Amount is required."),
+});
+
 const PostDetailsPage = () => {
   const [params] = useSearchParams();
   const detailId = params.get("id");
@@ -129,6 +140,12 @@ const PostDetailsPage = () => {
   const [winner, setWinner] = useState({});
   const [winnerId, setWinnerId] = useState("");
   const [winnerName, setWinnerName] = useState("");
+
+  const [participantsList, setParticipantsList] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+
+  const [status, setStatus] = useState(false);
 
   useEffect(() => {
     const colRef = collection(db, "posts");
@@ -147,6 +164,22 @@ const PostDetailsPage = () => {
     });
   }, []);
 
+  useEffect(() => {
+    const colRef = collection(db, "participants");
+    const queries = query(
+      colRef,
+      where("postID", "==", detailId),
+      where("userId", "==", userInfo.uid)
+    );
+    onSnapshot(queries, (snapshot) => {
+      // let result = [];
+      snapshot.forEach((doc) => {
+        setStatus(true);
+      });
+      // console.log(result);
+    });
+  }, [detailId, userInfo.uid]);
+
   const handleScrollRight = () => {
     const scroll = document.querySelector("#my_scroll2");
     scroll.scrollLeft = scroll.scrollLeft + 384;
@@ -161,9 +194,10 @@ const PostDetailsPage = () => {
   const {
     control,
     handleSubmit,
-    formState: { isValid },
+    formState: { isValid, errors },
   } = useForm({
     mode: "onChange",
+    resolver: yupResolver(schema),
     defaultValues: {},
   });
 
@@ -177,11 +211,16 @@ const PostDetailsPage = () => {
   const handleCallWinner = useRef();
 
   handleCallWinner.current = async (singleDoc) => {
-    if ((new Date(postDetail.endDay).getTime() - Date.now()) / 1000 <= 0) {
-    }
+    // if ((new Date(postDetail.endDay).getTime() - Date.now()) / 1000 <= 3000) {
+    // }
     setWinner(
       await blindContract?.methods
         ?.revealAuction(singleDoc.data().auctionID)
+        .call()
+    );
+    setParticipantsList(
+      await blindContract?.methods
+        .displayBids(singleDoc.data().auctionID)
         .call()
     );
   };
@@ -194,6 +233,17 @@ const PostDetailsPage = () => {
       setWinnerName(singleDoc.data().userName);
     }
   };
+
+  useEffect(() => {
+    const arrErrors = Object.values(errors);
+    if (arrErrors.length > 0) {
+      toast.error(arrErrors[0]?.message, {
+        delay: 0,
+        pauseOnHover: false,
+        // draggableDirection: "y",
+      });
+    }
+  }, [errors]);
 
   useEffect(() => {
     if (winner) {
@@ -268,6 +318,28 @@ const PostDetailsPage = () => {
 
   const handleMakeBid = async (values) => {
     if (!isValid) return;
+
+    if (postDetail.userId === userInfo.uid) {
+      toast.error("You cannot participate in your own bid.", {
+        pauseOnHover: false,
+      });
+      return;
+    }
+
+    if (!currentAccount) {
+      toast.error("You must login to metamask! Click here.", {
+        pauseOnHover: false,
+      });
+      return;
+    }
+
+    if (status) {
+      toast.error("You have entered this auction.", {
+        pauseOnHover: false,
+      });
+      return;
+    }
+
     const cloneValues = { ...values };
     cloneValues.valueA = Number(cloneValues.valueA);
     if (cloneValues.valueA < postDetail.startPrice) {
@@ -283,7 +355,7 @@ const PostDetailsPage = () => {
     try {
       Swal.fire({
         title: "Are you sure?",
-        text: "You won't be able to revert this!",
+        text: "You can only bid once in this auction!",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -291,6 +363,7 @@ const PostDetailsPage = () => {
         confirmButtonText: "Yes, update it!",
       }).then(async (result) => {
         if (result.isConfirmed) {
+          setLoading(true);
           const colRef = collection(db, "participants");
           await addDoc(colRef, {
             publicKey: currentAccount,
@@ -303,12 +376,13 @@ const PostDetailsPage = () => {
               cloneValues.valueA
             )
             .send({ from: currentAccount });
-          window.location.reload(false);
+          // window.location.reload(false);
           Swal.fire(
             "Successfully!",
             "Your price has been added to the system.",
             "success"
           );
+          setLoading(false);
           setOpenModal(false);
         }
       });
@@ -326,15 +400,26 @@ const PostDetailsPage = () => {
     setOpenModal(true);
   };
 
+  var count = 0;
+
   return (
     <PostDetailsPageStyles>
-      <ModalAdvanced visible={openModal} onClose={() => setOpenModal(false)}>
+      <ModalAdvanced
+        visible={openModal}
+        onClose={() => {
+          setLoading(false);
+          setOpenModal(false);
+        }}
+      >
         <form
           className="content bg-white relative z-10 rounded-lg p-10 min-w-[482px]"
           onSubmit={handleSubmit(handleMakeBid)}
         >
           <div
-            onClick={() => setOpenModal(false)}
+            onClick={() => {
+              setLoading(false);
+              setOpenModal(false);
+            }}
             className="absolute w-8 h-8 rounded-full shadow-lg cursor-pointer -top-[10px] -right-[10px] bg-white flex items-center justify-center p-1"
           >
             <svg
@@ -351,48 +436,66 @@ const PostDetailsPage = () => {
               />
             </svg>
           </div>
-          <p className="mb-6 text-4xl font-semibold text-center text-black">
-            Bid Placed
-          </p>
-          <hr className="bg-gray-200 mb-3" />
-          <div className="flex flex-col gap-y-3">
-            {/* <Label className="mt-6">Secret Key</Label>
-            <Input
-              control={control}
-              name="secretKey"
-              placeholder="Enter your secret key"
-            ></Input> */}
-            {/* <Label className="mt-6">Public Key</Label>
-            <Input
-              control={control}
-              name="publicKey"
-              placeholder="Confirm your public key"
-            ></Input> */}
-            <div className="relative">
-              <Label>Value Amount</Label>
-              <Input
-                className="mt-3"
-                control={control}
-                name="valueA"
-                placeholder="Confirm your deposit amount"
-              ></Input>
-              <span id="unitPrice" className="ml-auto absolute right-3 top-1/2">
-                VND
-              </span>
-            </div>
-            <p className="ml-3 text-xs text-red-400 opacity-90">
-              {"VD: 100000 (Một trăm nghìn đồng)"}
-            </p>
-            {/* <Label className="mt-6">Deposit Amount</Label>
-            <Input
-              control={control}
-              name="depositAmount"
-              placeholder="Enter your bid amount (>2*Bid Amount)"
-            ></Input> */}
-            <button className="bg-[#8334cc] w-full p-3 rounded-lg text-white font-semibold mt-6">
-              Confirm
-            </button>
-          </div>
+          {(new Date(postDetail.endDay).getTime() - Date.now()) / 1000 <= 40000 ? (
+            <>
+              <p className="mb-3 text-xl font-semibold text-center text-black">
+                Participant List
+              </p>
+              <hr className="bg-gray-200 mb-3" />
+              <Table>
+                <thead>
+                  <tr>
+                    <th>Public Key</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {participantsList &&
+                    participantsList[0]?.map((participant) => (
+                      <tr key={participant}>
+                        <td>{participant}</td>
+                        <td>{participantsList[1][count++]}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            </>
+          ) : (
+            <>
+              <p className="mb-6 text-4xl font-semibold text-center text-black">
+                Bid Placed
+              </p>
+              <hr className="bg-gray-200 mb-3" />
+              <div className="flex flex-col gap-y-3">
+                <div className="relative">
+                  <Label>Value Amount</Label>
+                  <Input
+                    className="mt-3"
+                    control={control}
+                    name="valueA"
+                    placeholder="Confirm your deposit amount"
+                  ></Input>
+                  <span
+                    id="unitPrice"
+                    className="ml-auto absolute right-3 top-1/2"
+                  >
+                    VND
+                  </span>
+                </div>
+                <p className="ml-3 text-xs text-red-400 opacity-90">
+                  {"VD: 100000 (Một trăm nghìn đồng)"}
+                </p>
+                <Button
+                  type="submit"
+                  className="mx-auto w-full"
+                  isLoading={loading}
+                  disabled={loading}
+                >
+                  Confirm
+                </Button>
+              </div>
+            </>
+          )}
         </form>
       </ModalAdvanced>
       <div className="container">
@@ -453,6 +556,14 @@ const PostDetailsPage = () => {
                         currency: "VND",
                       })}`}
                   </span>
+                  <Button
+                    onClick={handleOpenModal}
+                    type="button"
+                    kind="secondary"
+                    className="shadow-2xl border border-violet-600 hover:opacity-80 mt-6"
+                  >
+                    Participants List
+                  </Button>
                 </div>
               </div>
             ) : (

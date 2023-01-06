@@ -7,7 +7,8 @@ module.exports = {
         body: ["DM Sans", "Sans-serif"],
       },
       colors: {
-        primary: "#8334CC",
+        primary: "#05ADE9",
+        secondary: "#046EAC",
       },
     },
   },

@@ -45,7 +45,10 @@ const HeaderStyles = styled.header`
   }
   .logo {
     display: block;
-    max-width: 50px;
+    width: 50px;
+    height: 50px;
+    border-radius: 100rem;
+    overflow: hidden;
   }
   .menu {
     display: flex;
@@ -196,7 +199,7 @@ const Header = () => {
       <div className="container">
         <div className="header-main">
           <NavLink to={"/"}>
-            <img srcSet="/Logo.png 3x" alt="SmartTender" className="logo" />
+            <img srcSet="/Logo.png" alt="SmartTender" className="logo" />
           </NavLink>
           <ul className="menu">
             {menuList.map((item) => (
@@ -206,7 +209,7 @@ const Header = () => {
                     to={item.url + `?id=${userInfo?.uid}`}
                     id="menu-link"
                     className={({ isActive }) =>
-                      isActive ? "border-b-4 border-violet-600" : ""
+                      isActive ? "border-b-4 border-primary" : ""
                     }
                   >
                     {item.title}
@@ -215,7 +218,7 @@ const Header = () => {
                   <NavLink
                     to={item.url}
                     className={({ isActive }) =>
-                      isActive ? "border-b-4 border-violet-600" : ""
+                      isActive ? "border-b-4 border-primary" : ""
                     }
                     id="menu-link"
                   >
@@ -234,7 +237,7 @@ const Header = () => {
                   visible={openModal}
                   onClose={() => setOpenModal(false)}
                 >
-                  <div className="content bg-half-transparent w-full fixed nav-item top-[92px] right-0 ">
+                  <div className="content bg-half-transparent w-full fixed nav-item top-[92px] right-0 overflow-y-scroll h-[830px]">
                     <div className="float-right h-screen  duration-1000 ease-in-out dark:text-gray-200 transition-all dark:bg-[#484B52] bg-white md:w-400 p-8">
                       <div className="flex justify-between items-center">
                         <p className="font-semibold text-lg">

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 const HeadingStyles = styled.h2`
-  color: ${(props) => props.theme.tertiary};
+  color: ${(props) => props.theme.secondary};
   font-size: 28px;
   font-weight: 500;
   position: relative;

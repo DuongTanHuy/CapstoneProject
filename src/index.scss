@@ -151,7 +151,7 @@ input:-webkit-autofill:active {
 
 .transition-all.shadow-2xl.rounded-lg.bg-white.absolute.top-12 {
   // width: 440px;
-  height: 606px;
+  height: 600px;
   opacity: 1;
 }
 
@@ -165,7 +165,7 @@ input:-webkit-autofill:active {
 }
 
 .swiper-pagination-bullet-active {
-  background-color: #8334cc !important;
+  background-color: #05ADE9 !important;
 }
 
 #unitPrice {
@@ -175,4 +175,13 @@ input:-webkit-autofill:active {
   color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
+}
+
+#root,
+#portal-wrapper {
+  display: block !important;
+}
+
+body > div {
+  display: none;
 }

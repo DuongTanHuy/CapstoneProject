@@ -24,20 +24,20 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 const schema = yup.object({
-  // newPass: yup
-  //   .string()
-  //   .min(8, "Your password must be at least 8 characters!")
-  //   .matches(/(?=.*?[A-Z])/, "Password must contain at least one uppercase.")
-  //   .matches(
-  //     /(?=.*?[a-z])/,
-  //     "Password must contain at least one lowercase letter."
-  //   )
-  //   .matches(/(?=.*?[0-9])/, "Password must contain at least one number.")
-  //   .matches(
-  //     /(?=.*?[#?!@$%^&*-])/,
-  //     "Password must contain at least one special character."
-  //   )
-  //   .required("Please enter your password!"),
+  newPass: yup
+    .string()
+    .min(8, "Your password must be at least 8 characters!")
+    .matches(/(?=.*?[A-Z])/, "Password must contain at least one uppercase.")
+    .matches(
+      /(?=.*?[a-z])/,
+      "Password must contain at least one lowercase letter."
+    )
+    .matches(/(?=.*?[0-9])/, "Password must contain at least one number.")
+    .matches(
+      /(?=.*?[#?!@$%^&*-])/,
+      "Password must contain at least one special character."
+    )
+    .required("Please enter your password!"),
 });
 
 const UserProfile = () => {
@@ -45,6 +45,7 @@ const UserProfile = () => {
   const userId = params.get("id");
   const { userInfo } = useAuth();
   const [openModal, setOpenModal] = useState(false);
+
   const navigate = useNavigate();
 
   const {
