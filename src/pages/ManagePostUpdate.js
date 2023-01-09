@@ -133,6 +133,7 @@ const ManagePostUpdate = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await updateDoc(colRef, {
+          hot: values.hot,
           status: Number(values.status),
         });
 
@@ -164,8 +165,8 @@ const ManagePostUpdate = () => {
   return (
     <div>
       <DashboardHeading
-        title="Update your Auction"
-        desc="Change your auction information"
+        title="Update Auction"
+        desc="Change auction information"
       ></DashboardHeading>
       <form onSubmit={handleSubmit(handleUpdate)}>
         <div className="grid grid-cols-2 gap-x-10 mb-10">
@@ -283,7 +284,7 @@ const ManagePostUpdate = () => {
           isLoading={isSubmitting}
           disabled={isSubmitting}
         >
-          Update your Auction
+          Update Auction
         </Button>
       </form>
     </div>

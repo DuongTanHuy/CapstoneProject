@@ -180,7 +180,7 @@ const AuctionPage = () => {
         deployedNetwork2 && deployedNetwork2?.address
       );
       instance2.options.address = deployedNetwork2?.address;
-   
+
       setWeb3(web3);
       setAccounts(accounts);
       setBlindContract(instance2);

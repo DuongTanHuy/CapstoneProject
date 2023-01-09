@@ -78,6 +78,8 @@ const UserProfile = () => {
   const { image, setImage, progress, handleSelectImage, handleDeleteImg } =
     useHandleImage(setValue, getValues);
 
+  window.document.body.scrollIntoView({ behavior: "smooth", block: "start" });
+
   useEffect(() => {
     const arrErrors = Object.values(errors);
     if (arrErrors.length > 0) {

@@ -147,6 +147,8 @@ const PostDetailsPage = () => {
 
   const [status, setStatus] = useState(false);
 
+  window.document.body.scrollIntoView({ behavior: "smooth", block: "start" });
+
   useEffect(() => {
     const colRef = collection(db, "posts");
     const queries = query(
@@ -168,8 +170,8 @@ const PostDetailsPage = () => {
     const colRef = collection(db, "participants");
     const queries = query(
       colRef,
-      where("postID", "==", detailId),
-      where("userId", "==", userInfo.uid)
+      where("postID", "==", detailId || ""),
+      where("userId", "==", userInfo?.uid || "")
     );
     onSnapshot(queries, (snapshot) => {
       // let result = [];
@@ -178,7 +180,7 @@ const PostDetailsPage = () => {
       });
       // console.log(result);
     });
-  }, [detailId, userInfo.uid]);
+  }, [detailId, userInfo?.uid]);
 
   const handleScrollRight = () => {
     const scroll = document.querySelector("#my_scroll2");
@@ -436,7 +438,7 @@ const PostDetailsPage = () => {
               />
             </svg>
           </div>
-          {(new Date(postDetail.endDay).getTime() - Date.now()) / 1000 <= 40000 ? (
+          {(new Date(postDetail.endDay).getTime() - Date.now()) / 1000 <= 0 ? (
             <>
               <p className="mb-3 text-xl font-semibold text-center text-black">
                 Participant List

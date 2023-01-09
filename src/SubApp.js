@@ -7,7 +7,6 @@ import PostUpdate from "components/module/post/PostUpdate";
 import UserManage from "components/user/UserManage";
 import UserProfile from "components/user/UserProfile";
 // import { useMeta } from "contexts/metamask-context";
-import CreateAuctions from "mainFunctions/CreateAuction";
 import AuctionPage from "pages/AuctionPage";
 import DashboardPage from "pages/DashboardPage";
 import HomePage from "pages/HomePage";
@@ -43,10 +42,7 @@ function SubApp() {
         {authenticatedUser ? (
           <>
             <Route path="/" element={<DashboardLayout></DashboardLayout>}>
-              <Route
-                path="/"
-                element={<DashboardPage></DashboardPage>}
-              ></Route>
+              <Route path="/" element={<DashboardPage></DashboardPage>}></Route>
               <Route
                 path="/dashboard"
                 element={<DashboardPage></DashboardPage>}
@@ -85,10 +81,6 @@ function SubApp() {
               <Route
                 path="/auction"
                 element={<AuctionPage></AuctionPage>}
-              ></Route>
-              <Route
-                path="/create"
-                element={<CreateAuctions></CreateAuctions>}
               ></Route>
               <Route
                 path="/auction/create-auction"

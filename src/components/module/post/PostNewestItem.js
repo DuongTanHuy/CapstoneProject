@@ -48,14 +48,14 @@ const PostNewestItemStyles = styled.div`
     }
   }
 `;
-const PostNewestItem = () => {
+const PostNewestItem = ({data}) => {
   return (
     <PostNewestItemStyles>
-      <PostImage url="https://images.unsplash.com/photo-1550427913-d3a81a2cbffb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=894&q=80"></PostImage>
+      <PostImage url={data.image}></PostImage>
       <div className="post-content">
         <PostCategory type="secondary">Participate</PostCategory>
-        <PostTitle>Auction phone Vertu Aster P</PostTitle>
-        <PostMeta></PostMeta>
+        <PostTitle>{data.title}</PostTitle>
+        <PostMeta date="02/12/2022" authorName="Mr.Jan"></PostMeta>
       </div>
     </PostNewestItemStyles>
   );

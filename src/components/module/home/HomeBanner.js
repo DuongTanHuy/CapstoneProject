@@ -9,6 +9,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
+import parse from "html-react-parser";
 
 const HomeBannerStyles = styled.div`
   margin-bottom: 40px;
@@ -87,13 +88,10 @@ const HomeBanner = () => {
                 <div className="banner-content">
                   <h1 className="banner-heading">{post.title}</h1>
                   <p className="banner-desc">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum
-                    odit amet sed dolore accusamus sapiente aliquid placeat
-                    animi itaque in? Unde impedit mollitia velit labore!
-                    Consequatur esse nemo consectetur architecto.
+                    {parse(post?.content || "")[0].props.children.slice(0, 300)}
                   </p>
                   <Button to={`${post.slug}?id=${post.id}`} kind="secondary">
-                    Participate
+                    Participatel
                   </Button>
                 </div>
               </div>

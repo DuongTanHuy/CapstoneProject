@@ -24,6 +24,24 @@ const HomeNewestStyles = styled.div`
   }
 `;
 
+const data = [
+  {
+    image:
+      "https://vertuvietnam.net/wp-content/uploads/2022/07/Vertu-Signature-S-Rose-Gold-Diamond-Do-Vo-8.jpeg",
+    title: "Vertu Signature S Gold Diamond Độ Vỏ",
+  },
+  {
+    image:
+      "https://images.unsplash.com/photo-1552642762-f55d06580015?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1932&q=80",
+    title: "Bán đấu giá tài sản Kawasaki ZX9-R",
+  },
+  {
+    image:
+      "https://images.unsplash.com/photo-1549375812-2ab575f006f2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80",
+    title: "Kawasaki Z1000 R",
+  },
+];
+
 const HomeNewest = () => {
   const [posts, setPosts] = useState([]);
 
@@ -63,9 +81,12 @@ const HomeNewest = () => {
         <div className="layout">
           <PostNewestLarge></PostNewestLarge>
           <div className="sidebar">
+            {data.map((data, index) => (
+              <PostNewestItem key={index} data={data}></PostNewestItem>
+            ))}
+            {/* <PostNewestItem></PostNewestItem>
             <PostNewestItem></PostNewestItem>
-            <PostNewestItem></PostNewestItem>
-            <PostNewestItem></PostNewestItem>
+            <PostNewestItem></PostNewestItem> */}
           </div>
         </div>
         <div className="relative">

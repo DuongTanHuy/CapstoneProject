@@ -237,7 +237,7 @@ const Header = () => {
                   visible={openModal}
                   onClose={() => setOpenModal(false)}
                 >
-                  <div className="content bg-half-transparent w-full fixed nav-item top-[92px] right-0 overflow-y-scroll h-[830px]">
+                  <div className="content bg-half-transparent w-full fixed nav-item top-[92px] overflow-y-scroll h-[830px] -right-10">
                     <div className="float-right h-screen  duration-1000 ease-in-out dark:text-gray-200 transition-all dark:bg-[#484B52] bg-white md:w-400 p-8">
                       <div className="flex justify-between items-center">
                         <p className="font-semibold text-lg">
@@ -315,7 +315,7 @@ const Header = () => {
                           </p>
                           <p className="font-semibold">$890</p> */}
                         </div>
-                        <div className="flex justify-between items-center mt-3">
+                        {/* <div className="flex justify-between items-center mt-3">
                           <p className="text-gray-500 dark:text-gray-200 font-bold">
                             Total
                           </p>
@@ -325,7 +325,7 @@ const Header = () => {
                               currency: "VND",
                             })}
                           </p>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>

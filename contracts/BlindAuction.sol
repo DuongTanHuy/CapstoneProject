@@ -85,8 +85,32 @@ contract BlindAuction {
     }
 	function displayBids(uint _id) public view returns (address[] memory, uint[] memory) {
     // Check if the auction ID exists in the auctions mapping
-  	AuctionInfo storage auction = auctions[_id];
+     	AuctionInfo storage auction = auctions[_id];
         require(block.timestamp > auction.auctionEndTime, "Auction has not yet ended.");
-    return (auction.participants, auction.bids);
-}
+            return (auction.participants, auction.bids);
+    }
+function displayAccountBids(uint _id, address _account) public view returns (uint) {
+    // Check if the auction ID exists in the auctions mapping
+    require(_id < auctionCounter, "Invalid auction ID");
+
+    // Get the auction information
+    AuctionInfo storage auction = auctions[_id];
+
+    // Check if the auction has ended
+    require(block.timestamp > auction.auctionEndTime, "Auction has not yet ended.");
+
+    // Initialize a variable to store the total amount of bids placed by the specified Ethereum account
+    uint totalBids = 0;
+
+    // Iterate through the array of participants
+        for (uint i = 0; i < auction.participants.length; i++) {
+        // Check if the participant's address matches the specified Ethereum account
+            if (auction.participants[i] == _account) {
+            // Increment the total amount of bids
+                totalBids += auction.bids[i];
+            }
+        }
+    // Return the total amount of bids placed by the Ethereum account
+    return totalBids;
+    }
 }

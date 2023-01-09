@@ -103,9 +103,9 @@ const PostManage = () => {
     navigate(`/auction/update-auction?id=${post.id}`);
   };
 
-  const handleView = (post)=>{
-    navigate(`/auction/details?id=${post.id}`)
-  }
+  const handleView = (post) => {
+    navigate(`/auction/details?id=${post.id}`);
+  };
 
   const handleFilterChange = lodash.debounce(
     (event) => setFilter(event.target.value),
@@ -170,59 +170,69 @@ const PostManage = () => {
         <tbody>
           {posts &&
             posts.length > 0 &&
-            posts.map((post) => (
-              <tr key={post.id}>
-                <td>{post.id.slice(0, 3)}</td>
-                <td>
-                  <div className="flex items-center gap-x-3">
-                    <img
-                      src={post.image}
-                      alt=""
-                      className="w-[66px] h-[55px] rounded object-cover"
-                    />
-                    <div className="flex-1">
-                      <h3 className="font-semibold">{post.title}</h3>
-                      <time className="text-sm text-gray-500">
-                        <span>Date: </span>
-                        {new Date(
-                          post.createdAt.seconds * 1000
-                        ).toLocaleDateString("vi-VI")}
-                      </time>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <span className="text-gray-500">
-                    {post.categoryId === "1EfE0RTX3XSna0daNiz9"
-                      ? "Secret Auction"
-                      : "Public Auction"}
-                  </span>
-                </td>
-                <td>
-                  <span className="text-gray-500">{post.author}</span>
-                </td>
-                <td>
-                  {post.status === postStatus.APPROVED && (
-                    <LabelStatus type="approved">Approved</LabelStatus>
-                  )}
-                  {post.status === postStatus.REJECTED && (
-                    <LabelStatus type="un-approved">Un-approved</LabelStatus>
-                  )}
-                  {post.status === postStatus.PENDING && (
-                    <LabelStatus type="pending">Pending</LabelStatus>
-                  )}
-                </td>
-                <td>
-                  <div className="flex items-center gap-x-3">
-                    <ActionView onClick={()=> handleView(post)}></ActionView>
-                    <ActionEdit onClick={() => handleEdit(post)}></ActionEdit>
-                    <ActionDelete
-                      onClick={() => handleDeletePost(post)}
-                    ></ActionDelete>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            // eslint-disable-next-line array-callback-return
+            posts.map((post) => {
+              if (post.status !== 1)
+                return (
+                  <tr key={post.id}>
+                    <td>{post.id.slice(0, 3)}</td>
+                    <td>
+                      <div className="flex items-center gap-x-3">
+                        <img
+                          src={post.image}
+                          alt=""
+                          className="w-[66px] h-[55px] rounded object-cover"
+                        />
+                        <div className="flex-1">
+                          <h3 className="font-semibold">{post.title}</h3>
+                          <time className="text-sm text-gray-500">
+                            <span>Date: </span>
+                            {new Date(
+                              post.createdAt.seconds * 1000
+                            ).toLocaleDateString("vi-VI")}
+                          </time>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="text-gray-500">
+                        {post.categoryId === "1EfE0RTX3XSna0daNiz9"
+                          ? "Secret Auction"
+                          : "Public Auction"}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="text-gray-500">{post.author}</span>
+                    </td>
+                    <td>
+                      {post.status === postStatus.APPROVED && (
+                        <LabelStatus type="approved">Approved</LabelStatus>
+                      )}
+                      {post.status === postStatus.REJECTED && (
+                        <LabelStatus type="un-approved">
+                          Un-approved
+                        </LabelStatus>
+                      )}
+                      {post.status === postStatus.PENDING && (
+                        <LabelStatus type="pending">Pending</LabelStatus>
+                      )}
+                    </td>
+                    <td>
+                      <div className="flex items-center gap-x-3">
+                        <ActionView
+                          onClick={() => handleView(post)}
+                        ></ActionView>
+                        <ActionEdit
+                          onClick={() => handleEdit(post)}
+                        ></ActionEdit>
+                        <ActionDelete
+                          onClick={() => handleDeletePost(post)}
+                        ></ActionDelete>
+                      </div>
+                    </td>
+                  </tr>
+                );
+            })}
         </tbody>
       </Table>
       <div className="mt-10">
