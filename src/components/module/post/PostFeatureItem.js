@@ -93,25 +93,28 @@ const PostFeatureItem = ({ data }) => {
 
   return (
     <PostFeatureItemStyles>
-        <PostImage url={data.image}></PostImage>
-        <div className="post-overlay"></div>
-        <div className="post-content" onClick={()=> navigate(`${data.slug}?id=${data.id}`)}>
-          <div className="post-top">
-            {categories?.name && (
-              <PostCategory to={categories?.slug}>
-                {categories?.name}
-              </PostCategory>
-            )}
-            <PostMeta
-              date={formatDate}
-              to={slugify(data?.author || "", { lower: true })}
-              authorName={data?.author}
-            ></PostMeta>
-          </div>
-          <PostTitle to={`${data.slug}?id=${data.id}`} size="big">
-            {data.title}
-          </PostTitle>
+      <PostImage url={data.image}></PostImage>
+      <div className="post-overlay"></div>
+      <div
+        className="post-content"
+        onClick={() => navigate(`${data.slug}?id=${data.id}`)}
+      >
+        <div className="post-top">
+          {categories?.name && (
+            <PostCategory to={categories?.slug}>
+              {categories?.name}
+            </PostCategory>
+          )}
+          <PostMeta
+            date={formatDate}
+            to={slugify(data?.author || "", { lower: true })}
+            authorName={data?.author}
+          ></PostMeta>
         </div>
+        <PostTitle to={`${data.slug}?id=${data.id}`} size="big">
+          {data.title}
+        </PostTitle>
+      </div>
     </PostFeatureItemStyles>
   );
 };
