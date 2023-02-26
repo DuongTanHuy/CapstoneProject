@@ -445,6 +445,46 @@ const Header = () => {
                                       </div>
                                     </div>
                                   </div>
+                                ) : item.status === 6 ? (
+                                  <div
+                                    className="flex flex-row gap-x-3 items-center"
+                                    onClick={() =>
+                                      navigate(
+                                        `${item?.slug}?id=${item?.postId}`
+                                      )
+                                    }
+                                  >
+                                    <div className=" w-[50px] h-[50px] rounded-full overflow-hidden">
+                                      <img
+                                        className="w-full h-full object-cover"
+                                        src={
+                                          item.image ||
+                                          "https://images.unsplash.com/photo-1670272499188-79fe22656f64?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80"
+                                        }
+                                        alt=""
+                                      />
+                                    </div>
+                                    <div className="text-gray-500 flex flex-col">
+                                      <span className="font-semibold">
+                                        {`${item.content}   `}
+                                      </span>
+                                      <div className="grid grid-cols-2 gap-x-3">
+                                        <div className="flex flex-row items-center justify-start">
+                                          <span>
+                                            <img
+                                              src="https://thumbs.dreamstime.com/z/gold-crown-icon-crown-logo-gold-crown-icon-white-background-128066602.jpg"
+                                              alt=""
+                                              className="w-6 h-6 inline-block text-red-500"
+                                            />
+                                          </span>
+                                          <span>&nbsp; You Win</span>
+                                        </div>
+                                        <span className="text-gray-300">
+                                          {`Date: ${formatDate}`}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
                                 ) : (
                                   <div
                                     className="flex flex-row gap-x-3 items-center"

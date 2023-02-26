@@ -10,6 +10,7 @@ import {
   getDoc,
   onSnapshot,
   query,
+  serverTimestamp,
   where,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
@@ -233,6 +234,30 @@ const PostDetailsPage = () => {
       const colRef = doc(db, "users", winnerId);
       const singleDoc = await getDoc(colRef);
       setWinnerName(singleDoc.data().userName);
+
+      const col = collection(db, "notify");
+      const queries = query(
+        col,
+        where("status", "==", Number(6)),
+        where("userId", "==", winnerId),
+        where("postId", "==", detailId)
+      );
+      onSnapshot(queries, (snapshot) => {
+        snapshot.forEach(async (doc) => {
+          if (doc.length === 0) {
+            const colRef1 = collection(db, "notify");
+            await addDoc(colRef1, {
+              content: postDetail.title,
+              status: Number(6),
+              userId: winnerId,
+              postId: detailId,
+              image: postDetail.image,
+              slug: postDetail.slug,
+              createdAt: serverTimestamp(),
+            });
+          }
+        });
+      });
     }
   };
 
@@ -543,20 +568,23 @@ const PostDetailsPage = () => {
               <div className="flex flex-col">
                 <div>
                   <Label>Winner: </Label>
-                  {winner && <span className="ml-3">{winnerName}</span>}
+                  {(winner && <span className="ml-3">{winnerName}</span>) ||
+                    "Calculating..."}
                 </div>
                 <div>
                   <Label>Public key of winner: </Label>
-                  {winner && <span className="ml-3">{winner[0]}</span>}
+                  {(winner && <span className="ml-3">{winner[0]}</span>) ||
+                    "Calculating..."}
                 </div>
                 <div>
                   <Label>Highest price: </Label>
                   <span id="unitPrice" className="my-6 ml-3">
-                    {winner &&
+                    {(winner &&
                       `${Number(winner[1]).toLocaleString("it-IT", {
                         style: "currency",
                         currency: "VND",
-                      })}`}
+                      })}`) ||
+                      "Calculating..."}
                   </span>
                   <Button
                     onClick={handleOpenModal}
