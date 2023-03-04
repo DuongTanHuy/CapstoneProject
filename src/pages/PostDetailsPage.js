@@ -67,6 +67,8 @@ const PostDetailsPageStyles = styled.div`
     margin-bottom: 80px;
     display: flex;
     border-radius: 20px;
+    height: 200px;
+    overflow: hidden;
     background-color: ${(props) => props.theme.grayF3};
     &-image {
       width: 200px;
