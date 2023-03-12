@@ -257,6 +257,22 @@ const PostDetailsPage = () => {
               slug: postDetail.slug,
               createdAt: serverTimestamp(),
             });
+
+            const col2 = collection(db, "participants");
+            const queries2 = query(col2, where("postID", "==", detailId));
+            onSnapshot(queries2, (snapshot) => {
+              snapshot.forEach(async (doc) => {
+                await addDoc(colRef1, {
+                  content: postDetail.title,
+                  status: Number(9),
+                  userId: doc.data()?.userId,
+                  postId: detailId,
+                  image: postDetail.image,
+                  slug: postDetail.slug,
+                  createdAt: serverTimestamp(),
+                });
+              });
+            });
           }
         });
       });

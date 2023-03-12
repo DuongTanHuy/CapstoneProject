@@ -8,6 +8,9 @@ import PostCategory from "./PostCategory";
 import PostImage from "./PostImage";
 import PostMeta from "./PostMeta";
 import PostTitle from "./PostTitle";
+import "../../../../src/item.scss";
+import parse from "html-react-parser";
+
 const PostFeatureItemStyles = styled.div`
   width: 100%;
   border-radius: 16px;
@@ -92,30 +95,46 @@ const PostFeatureItem = ({ data }) => {
   if (!data || !data.id) return null;
 
   return (
-    <PostFeatureItemStyles>
-      <PostImage url={data.image}></PostImage>
-      <div className="post-overlay"></div>
-      <div
-        className="post-content"
-        onClick={() => navigate(`${data.slug}?id=${data.id}`)}
-      >
-        <div className="post-top">
-          {categories?.name && (
-            <PostCategory to={categories?.slug}>
-              {categories?.name}
-            </PostCategory>
-          )}
-          <PostMeta
-            date={formatDate}
-            to={slugify(data?.author || "", { lower: true })}
-            authorName={data?.author}
-          ></PostMeta>
+    <div className="card__giratorio">
+      <div className="card__giratorio-conteudo">
+        <div className="card__giratorio-conteudo--frente">
+          <PostFeatureItemStyles>
+            <PostImage url={data.image}></PostImage>
+            <div className="post-overlay"></div>
+            <div
+              className="post-content"
+              onClick={() => navigate(`${data.slug}?id=${data.id}`)}
+            >
+              <div className="post-top">
+                {categories?.name && (
+                  <PostCategory to={categories?.slug}>
+                    {categories?.name}
+                  </PostCategory>
+                )}
+                <PostMeta
+                  date={formatDate}
+                  to={slugify(data?.author || "", { lower: true })}
+                  authorName={data?.author}
+                ></PostMeta>
+              </div>
+              <PostTitle to={`${data.slug}?id=${data.id}`} size="big">
+                {data.title}
+              </PostTitle>
+            </div>
+          </PostFeatureItemStyles>
         </div>
-        <PostTitle to={`${data.slug}?id=${data.id}`} size="big">
-          {data.title}
-        </PostTitle>
+        <div className="card__giratorio-conteudo--traseira pl-3">
+          <img src="/Logo.png" alt="" className="logo-item" />
+          <h1>{data?.title}</h1>
+          <p>
+            {parse(data?.content || "")[0]?.props.children.slice(0, 100)}...
+          </p>
+          <p id="unitPrice" className="!text-white">
+            Start price:&nbsp;{data.startPrice}&nbsp; VND
+          </p>
+        </div>
       </div>
-    </PostFeatureItemStyles>
+    </div>
   );
 };
 
