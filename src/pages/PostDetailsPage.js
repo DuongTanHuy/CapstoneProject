@@ -591,7 +591,11 @@ const PostDetailsPage = () => {
                 </div>
                 <div>
                   <Label>Public key of winner: </Label>
-                  {(winner && <span className="ml-3">{winner[0]}</span>) ||
+                  {(winner && (
+                    <span title={winner[0]} className="ml-3 cursor-pointer">
+                      {winner[0]}
+                    </span>
+                  )) ||
                     "Calculating..."}
                 </div>
                 <div>
