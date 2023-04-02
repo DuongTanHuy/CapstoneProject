@@ -9,10 +9,12 @@
 }
 
 body {
-  // background: url("../public/bg.jpg") no-repeat;
+  min-height: 100vh;
+  // background: url("../public/backgroung/5073414.jpg") no-repeat;
+  // background-size: cover;
+  // background-position: center;
   font-size: 16px;
   color: #232323;
-  background-size: 100%;
 }
 
 .container {

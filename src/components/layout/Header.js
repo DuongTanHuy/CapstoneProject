@@ -237,8 +237,8 @@ const Header = () => {
                   visible={openModal}
                   onClose={() => setOpenModal(false)}
                 >
-                  <div className="content bg-half-transparent w-full fixed nav-item top-[92px] overflow-y-scroll h-[830px] -right-10">
-                    <div className="float-right h-screen  duration-1000 ease-in-out dark:text-gray-200 transition-all dark:bg-[#484B52] bg-white md:w-400 p-8">
+                  <div className="content bg-half-transparent w-full fixed nav-item top-[92px] overflow-y-scroll h-full -right-10">
+                    <div className="float-right  duration-1000 ease-in-out dark:text-gray-200 transition-all dark:bg-[#484B52] bg-white md:w-400 p-8 h-[1600px]">
                       <div className="flex justify-between items-center">
                         <p className="font-semibold text-lg">
                           Auction participated

@@ -27,7 +27,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/scss";
 import { toast } from "react-toastify";
 import { useAuth } from "contexts/auth-context";
-import { useRef } from "react";
 import Swal from "sweetalert2";
 import { Table } from "components/table";
 import * as yup from "yup";
@@ -130,6 +129,10 @@ const schema = yup.object({
 });
 
 const PostDetailsPage = () => {
+  window.document.body.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  let count = 0;
+
   const [params] = useSearchParams();
   const detailId = params.get("id");
   const { userInfo } = useAuth();
@@ -150,7 +153,194 @@ const PostDetailsPage = () => {
 
   const [status, setStatus] = useState(false);
 
-  window.document.body.scrollIntoView({ behavior: "smooth", block: "start" });
+  const {
+    control,
+    handleSubmit,
+    formState: { isValid, errors },
+  } = useForm({
+    mode: "onChange",
+    resolver: yupResolver(schema),
+    defaultValues: {},
+  });
+
+  const { blindContract, currentAccount } = useMeta();
+
+  // const date = postDetail?.createdAt?.seconds
+  // ? new Date(postDetail?.createdAt?.seconds * 1000)
+  //   : new Date();
+  // const formatDate = new Date(date).toLocaleDateString("vi-VI");
+
+  // const handleCallWinner = useRef();
+
+  // handleCallWinner.current = async (singleDoc) => {
+  // if ((new Date(postDetail.endDay).getTime() - Date.now()) / 1000 < 0) {
+  // }
+  //   setWinner(
+  //     await blindContract?.methods
+  //       ?.revealAuction(singleDoc.data().auctionID)
+  //       .call()
+  //   );
+  //   setParticipantsList(
+  //     await blindContract?.methods
+  //       .displayBids(singleDoc.data().auctionID)
+  //       .call()
+  //   );
+  // };
+
+  useEffect(() => {
+    async function fetchData() {
+      const colRef = doc(db, "posts", detailId);
+      const singleDoc = await getDoc(colRef);
+      setPostDetail(singleDoc.data());
+
+      // handleCallWinner.current(singleDoc);
+      if (
+        (new Date(singleDoc.data().endDay).getTime() - Date.now()) / 1000 <
+        0
+      ) {
+        setWinner(
+          await blindContract?.methods
+            ?.revealAuction(singleDoc.data().auctionID)
+            .call()
+        );
+        setParticipantsList(
+          await blindContract?.methods
+            .displayBids(singleDoc.data().auctionID)
+            .call()
+        );
+      }
+    }
+
+    fetchData();
+  }, [blindContract?.methods, detailId, postDetail.endDay]);
+
+  // const handleCallWinnerName = useRef();
+  // handleCallWinnerName.current = async (winnerID) => {
+  //   if (winnerID) {
+  //     const colRef = doc(db, "users", winnerID);
+  //     const singleDoc = await getDoc(colRef);
+  //     setWinnerName(singleDoc.data().userName);
+
+  //     const col = collection(db, "notify");
+  //     const queries = query(
+  //       col,
+  //       // where("status", "==", Number(6)),
+  //       where("userId", "==", winnerID),
+  //       where("postId", "==", detailId)
+  //     );
+  //     onSnapshot(queries, async (snapshot) => {
+  //       if (snapshot && snapshot.size === 0) {
+  //         await addDoc(col, {
+  //           content: postDetail.title,
+  //           status: Number(6),
+  //           userId: winnerID,
+  //           postId: detailId,
+  //           image: postDetail.image,
+  //           slug: postDetail.slug,
+  //           createdAt: serverTimestamp(),
+  //         });
+
+  //         const col2 = collection(db, "participants");
+  //         const queries2 = query(col2, where("postID", "==", detailId));
+  //         onSnapshot(queries2, (snapshot) => {
+  //           snapshot.forEach(async (doc) => {
+  //             if (doc.data()?.userId !== winnerID) {
+  //               await addDoc(col, {
+  //                 content: postDetail.title,
+  //                 status: Number(9),
+  //                 userId: doc.data()?.userId,
+  //                 postId: detailId,
+  //                 image: postDetail.image,
+  //                 slug: postDetail.slug,
+  //                 createdAt: serverTimestamp(),
+  //               });
+  //             }
+  //           });
+  //         });
+  //       }
+  //     });
+  //   }
+  // };
+
+  useEffect(() => {
+    if (winner) {
+      // console.log(winner);
+      // console.log(detailId);
+      const colRef = collection(db, "participants");
+      const queries = query(
+        colRef,
+        where("publicKey", "==", winner[0] || ""),
+        where("postID", "==", detailId || "")
+      );
+      onSnapshot(queries, (snapshot) => {
+        snapshot.forEach(async (doc1) => {
+          setWinnerId(doc1.data().userId);
+          // handleCallWinnerName.current(doc.data().userId);
+
+          if (winnerId) {
+            const colRef = doc(db, "users", winnerId);
+            const singleDoc = await getDoc(colRef);
+            setWinnerName(singleDoc.data().userName);
+
+            const col = collection(db, "notify");
+            const queries = query(
+              col,
+              where("status", "==", Number(6)),
+              where("userId", "==", winnerId),
+              where("postId", "==", detailId)
+            );
+            onSnapshot(queries, async (snapshot) => {
+              if (snapshot && snapshot.size === 0) {
+                await addDoc(col, {
+                  content: postDetail.title,
+                  status: Number(6),
+                  userId: winnerId,
+                  postId: detailId,
+                  image: postDetail.image,
+                  slug: postDetail.slug,
+                  createdAt: serverTimestamp(),
+                });
+
+                // const col2 = collection(db, "participants");
+                // const queries2 = query(col2, where("postID", "==", detailId));
+                // onSnapshot(queries2, (snapshot) => {
+                //   snapshot.forEach(async (doc2) => {
+                //     if (doc2.data()?.userId !== winnerId) {
+                //       await addDoc(col, {
+                //         content: postDetail.title,
+                //         status: Number(9),
+                //         userId: doc2.data()?.userId,
+                //         postId: detailId,
+                //         image: postDetail.image,
+                //         slug: postDetail.slug,
+                //         createdAt: serverTimestamp(),
+                //       });
+                //     }
+                //   });
+                // });
+              }
+            });
+          }
+        });
+      });
+    }
+  }, [
+    detailId,
+    postDetail.image,
+    postDetail.slug,
+    postDetail.title,
+    winner,
+    winnerId,
+  ]);
+
+  const handleScrollRight = () => {
+    const scroll = document.querySelector("#my_scroll2");
+    scroll.scrollLeft = scroll.scrollLeft + 384;
+  };
+  const handleScrollLeft = () => {
+    const scroll = document.querySelector("#my_scroll2");
+    scroll.scrollLeft = scroll.scrollLeft - 384;
+  };
 
   useEffect(() => {
     const colRef = collection(db, "posts");
@@ -169,6 +359,7 @@ const PostDetailsPage = () => {
     });
   }, []);
 
+  // kiem tra nguoi dung hien tai co phai nguoi tao phien dau gia khong
   useEffect(() => {
     const colRef = collection(db, "participants");
     const queries = query(
@@ -185,99 +376,7 @@ const PostDetailsPage = () => {
     });
   }, [detailId, userInfo?.uid]);
 
-  const handleScrollRight = () => {
-    const scroll = document.querySelector("#my_scroll2");
-    scroll.scrollLeft = scroll.scrollLeft + 384;
-  };
-  const handleScrollLeft = () => {
-    const scroll = document.querySelector("#my_scroll2");
-    scroll.scrollLeft = scroll.scrollLeft - 384;
-  };
-
   // console.log(postDetail);
-
-  const {
-    control,
-    handleSubmit,
-    formState: { isValid, errors },
-  } = useForm({
-    mode: "onChange",
-    resolver: yupResolver(schema),
-    defaultValues: {},
-  });
-
-  const { blindContract, currentAccount } = useMeta();
-
-  // const date = postDetail?.createdAt?.seconds
-  // ? new Date(postDetail?.createdAt?.seconds * 1000)
-  //   : new Date();
-  // const formatDate = new Date(date).toLocaleDateString("vi-VI");
-
-  const handleCallWinner = useRef();
-
-  handleCallWinner.current = async (singleDoc) => {
-    // if ((new Date(postDetail.endDay).getTime() - Date.now()) / 1000 <= 3000) {
-    // }
-    setWinner(
-      await blindContract?.methods
-        ?.revealAuction(singleDoc.data().auctionID)
-        .call()
-    );
-    setParticipantsList(
-      await blindContract?.methods
-        .displayBids(singleDoc.data().auctionID)
-        .call()
-    );
-  };
-
-  const handleCallWinnerName = useRef();
-  handleCallWinnerName.current = async () => {
-    if (winnerId) {
-      const colRef = doc(db, "users", winnerId);
-      const singleDoc = await getDoc(colRef);
-      setWinnerName(singleDoc.data().userName);
-
-      const col = collection(db, "notify");
-      const queries = query(
-        col,
-        where("status", "==", Number(6)),
-        where("userId", "==", winnerId),
-        where("postId", "==", detailId)
-      );
-      onSnapshot(queries, (snapshot) => {
-        snapshot.forEach(async (doc) => {
-          if (doc.length === 0) {
-            const colRef1 = collection(db, "notify");
-            await addDoc(colRef1, {
-              content: postDetail.title,
-              status: Number(6),
-              userId: winnerId,
-              postId: detailId,
-              image: postDetail.image,
-              slug: postDetail.slug,
-              createdAt: serverTimestamp(),
-            });
-
-            const col2 = collection(db, "participants");
-            const queries2 = query(col2, where("postID", "==", detailId));
-            onSnapshot(queries2, (snapshot) => {
-              snapshot.forEach(async (doc) => {
-                await addDoc(colRef1, {
-                  content: postDetail.title,
-                  status: Number(9),
-                  userId: doc.data()?.userId,
-                  postId: detailId,
-                  image: postDetail.image,
-                  slug: postDetail.slug,
-                  createdAt: serverTimestamp(),
-                });
-              });
-            });
-          }
-        });
-      });
-    }
-  };
 
   useEffect(() => {
     const arrErrors = Object.values(errors);
@@ -289,40 +388,6 @@ const PostDetailsPage = () => {
       });
     }
   }, [errors]);
-
-  useEffect(() => {
-    if (winner) {
-      // console.log(winner);
-      // console.log(detailId);
-      const colRef = collection(db, "participants");
-      const queries = query(
-        colRef,
-        where("publicKey", "==", winner[0] || ""),
-        where("postID", "==", detailId || "")
-      );
-      onSnapshot(queries, (snapshot) => {
-        snapshot.forEach((doc) => {
-          setWinnerId(doc.data().userId);
-        });
-      });
-      handleCallWinnerName.current();
-    }
-  }, [detailId, winner, winnerId]);
-
-  useEffect(() => {
-    async function fetchData() {
-      const colRef = doc(db, "posts", detailId);
-      const singleDoc = await getDoc(colRef);
-      setPostDetail(singleDoc.data());
-
-      handleCallWinner.current(singleDoc);
-    }
-
-    // const result = document.querySelector("body");
-    // result.scrollTop = 0;
-
-    fetchData();
-  }, [detailId]);
 
   useEffect(() => {
     async function fetchData() {
@@ -410,17 +475,20 @@ const PostDetailsPage = () => {
         if (result.isConfirmed) {
           setLoading(true);
           const colRef = collection(db, "participants");
+            
           await addDoc(colRef, {
             publicKey: currentAccount,
             postID: detailId,
             userId: userInfo.uid,
           });
+
           await blindContract?.methods
-            .participateInAuction(
-              Number(postDetail.auctionID),
-              cloneValues.valueA
-            )
-            .send({ from: currentAccount });
+          .participateInAuction(
+            Number(postDetail.auctionID),
+            cloneValues.valueA
+          )
+          .send({ from: currentAccount });
+
           // window.location.reload(false);
           Swal.fire(
             "Successfully!",
@@ -444,8 +512,6 @@ const PostDetailsPage = () => {
     }
     setOpenModal(true);
   };
-
-  var count = 0;
 
   return (
     <PostDetailsPageStyles>
@@ -481,7 +547,7 @@ const PostDetailsPage = () => {
               />
             </svg>
           </div>
-          {(new Date(postDetail.endDay).getTime() - Date.now()) / 1000 <= 0 ? (
+          {(new Date(postDetail.endDay).getTime() - Date.now()) / 1000 < 0 ? (
             <>
               <p className="mb-3 text-xl font-semibold text-center text-black">
                 Participant List
