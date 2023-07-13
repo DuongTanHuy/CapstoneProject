@@ -10333,10 +10333,16 @@
       "links": {},
       "address": "0xB9c6050a087Ea943814c9e9EB9fcFCfB3539084B",
       "transactionHash": "0x14bfd290f605d7932afab50f3d90de4044a1c7b9d8a8b65eeb05e53dcffc3ccc"
+    },
+    "11155111": {
+      "events": {},
+      "links": {},
+      "address": "0x77b6b3280010060A7A3E85A0067404cB72A40763",
+      "transactionHash": "0x9e0243459b66e7f5659319a3107b086355547388e4a212347ec6296a045da403"
     }
   },
   "schemaVersion": "3.4.10",
-  "updatedAt": "2023-01-06T13:34:29.075Z",
+  "updatedAt": "2023-05-09T14:17:26.119Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

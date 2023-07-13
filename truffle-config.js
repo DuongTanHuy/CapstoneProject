@@ -48,8 +48,7 @@ const HDWalletProvider = require("@truffle/hdwallet-provider");
 
 // const HDWalletProvider = require('@truffle/hdwallet-provider');
 const private_keys = [
-  process.env.PRIVATE_KEY_0,
-  process.env.PRIVATE_KEY_1,
+  process.env.PRIVATE_KEY_0
 ]
 module.exports = {
   /**
@@ -87,21 +86,21 @@ module.exports = {
     //
     // Useful for deploying to a public network.
     // Note: It's important to wrap the provider as a function to ensure truffle uses a new provider every time.
-    goerli: {
+    sepolia: {
       provider: () => new HDWalletProvider({
         privateKeys: private_keys,
-        providerOrUrl: "https://goerli.infura.io/v3/9ed81e5cf75448fa840f1ad75a70db63",
+        providerOrUrl: "https://bitter-dimensional-tree.ethereum-sepolia.discover.quiknode.pro/25941a0bf7dd6ec61c62c3afe3e2c56ed59ada4a/",
         numberOfAddresses: 2,
       }),
-      network_id: 5, // Goerli's id
+      network_id: 11155111, // sepolia's id
       confirmations: 2, // # of confirmations to wait between deployments. (default: 0)
       timeoutBlocks: 200, // # of blocks before a deployment times out  (minimum/default: 50)
       skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
     },
-    testnet: {
-      networkCheckTimeout: 10000,
-      timeoutBlocks: 200
-    }
+    // testnet: {
+    //   networkCheckTimeout: 10000,
+    //   timeoutBlocks: 200
+    // }
     //
     // Useful for private networks
     // private: {

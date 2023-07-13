@@ -88,7 +88,10 @@ const HomeBanner = () => {
                 <div className="banner-content">
                   <h1 className="banner-heading">{post.title}</h1>
                   <p className="banner-desc">
-                    {parse(post?.content || "")[0]?.props.children.slice(0, 300)}
+                    {parse(post?.content || "")[0]?.props.children.slice(
+                      0,
+                      300
+                    )}
                   </p>
                   <Button to={`${post.slug}?id=${post.id}`} kind="secondary">
                     Participate
